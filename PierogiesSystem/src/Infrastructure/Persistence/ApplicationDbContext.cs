@@ -20,7 +20,6 @@ namespace CleanArchitecture.Infrastructure.Persistence
 
         public ApplicationDbContext(
             DbContextOptions<ApplicationDbContext> options,
-            IOptions<OperationalStoreOptions> operationalStoreOptions,
             IDomainEventService domainEventService,
             IDateTime dateTime) : base(options)
         {
@@ -28,9 +27,7 @@ namespace CleanArchitecture.Infrastructure.Persistence
             _dateTime = dateTime;
         }
 
-        public DbSet<TodoItem> TodoItems { get; set; }
 
-        public DbSet<TodoList> TodoLists { get; set; }
         public DbSet<User> MyUsers { get; set; }
         public DbSet<Position> Positions { get; set; }
         public DbSet<Form> Forms { get; set; }

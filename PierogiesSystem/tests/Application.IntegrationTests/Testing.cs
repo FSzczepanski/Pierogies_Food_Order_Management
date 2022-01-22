@@ -53,10 +53,7 @@ public class Testing
 
         services.Remove(currentUserServiceDescriptor);
 
-        // Register testing version
-        services.AddTransient(provider =>
-            Mock.Of<IUserService>(s => s.UserId == _currentUserId));
-
+   
         _scopeFactory = services.BuildServiceProvider().GetService<IServiceScopeFactory>();
 
         _checkpoint = new Checkpoint

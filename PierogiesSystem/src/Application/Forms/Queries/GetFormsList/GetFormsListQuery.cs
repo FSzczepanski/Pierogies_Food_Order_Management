@@ -25,9 +25,10 @@
 
             public async Task<FormListAm> Handle(GetFormsListQuery request, CancellationToken cancellationToken)
             {
-                Console.WriteLine(request.ToString());
+                List<FormDetailListAm> items = await _applicationDbContext.Forms.AsNoTracking()
+                    .ProjectToListAsync<FormDetailListAm>(_mapper.ConfigurationProvider);
                 
-                return new FormListAm {Items = new List<FormDetailListAm>()};
+                return new FormListAm {Items = items};
             }
         }
     }

@@ -7,19 +7,15 @@ using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NSwag;
-using NSwag.Generation.Processors.Security;
-using System.Linq;
 
 namespace CleanArchitecture.WebUI
 {
     using Domain.Entities;
     using Extensions;
-    using Microsoft.EntityFrameworkCore;
+    using Microsoft.OpenApi.Models;
     using Middleware;
 
     public class Startup
@@ -34,47 +30,40 @@ namespace CleanArchitecture.WebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            
+            
             services.AddApplication();
             services.AddInfrastructure(Configuration);
-            services.AddControllers();
-
-            services.AddCors(o => o.AddPolicy("AllowOrigin", builder =>
-            {
-                builder.AllowAnyOrigin()
-                    .AllowAnyMethod()
-                    .AllowAnyHeader();
-            }));
             
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseNpgsql(
-                    Configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)).EnableSensitiveDataLogging());
-            services.AddScoped<IApplicationDbContext>(provider => provider.GetService<ApplicationDbContext>()!);
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Pierogies.WebApi", Version = "v1" });
+            });
+            
+            services.AddCors();
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddScoped<IUserService, UserService>();
+            services.AddHttpContextAccessor();
+            
+            
+            services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
+
+        
+            services.AddControllersWithViews(options =>
+                options.Filters.Add<ApiExceptionFilterAttribute>())
+                .AddFluentValidation(x => x.AutomaticValidationEnabled = false);
 
             
             services.AddLogging();
-
-            services.AddDatabaseDeveloperPageExceptionFilter();
-
-            services.AddScoped<IUserService, UserService>();
-
-            services.AddHttpContextAccessor();
-
-            services.AddHealthChecks()
-                .AddDbContextCheck<ApplicationDbContext>();
-
-            services.AddControllersWithViews(options =>
-                options.Filters.Add<ApiExceptionFilterAttribute>())
-                    .AddFluentValidation(x => x.AutomaticValidationEnabled = false);
+            services.AddMvc();
+         
             
-            // Customise default API behaviour
-            services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.SuppressModelStateInvalidFilter = true;
-            });
+            services.Configure<ApiBehaviorOptions>(options => 
+                options.SuppressModelStateInvalidFilter = true);
 
             services.AddSwaggerDocumentation();
+            
 
         }
 
@@ -88,27 +77,45 @@ namespace CleanArchitecture.WebUI
             }
             else
             {
-                app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseExceptionHandler("/Error"); 
                 app.UseHsts();
             }
+            
+            
 
             app.UseHealthChecks("/health");
             app.UseHttpsRedirection();
-
+            
+            app.UseStaticFiles();
+            if (!env.IsDevelopment())
+            {
+                app.UseSpaStaticFiles();
+            }
+            
+            app.UseSwaggerUi3(settings =>
+            {
+                settings.Path = "/api";
+                settings.DocumentPath = "/api/specification.json";
+            });
+            
             app.UseRouting();
+            // app.UseAuthentication();
+            //
+            // app.UseAuthorization();
+            //
+            app.UseCors(options =>
+                options.WithOrigins("http://localhost:8080")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod());
             
-            
-            app.UseAuthentication();
-            app.UseAuthorization();
-
             app.UseMiddleware<JwtMiddleware>();
         
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-
+            
+            
             app.UseSwaggerDocumentation();
         }
     }

@@ -1,18 +1,24 @@
 <template>
   <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+    
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
+import { defineComponent, ref } from "vue";
+import {FormsClient, PositionsClient} from "@/core/api/swiftApi";
 
-@Options({
+export default defineComponent({
+  name: "Home",
   components: {
-    HelloWorld,
-  },
-})
-export default class Home extends Vue {}
+  },setup: () => {
+    const formsList = ref(Array<any>([]));
+      const client = new PositionsClient(process.env.VUE_APP_API_BASE_PATH);
+    
+    client.getPositions().then((response) => {
+      formsList.value = response as any
+      console.log(formsList.value);
+    })
+  }
+});
 </script>

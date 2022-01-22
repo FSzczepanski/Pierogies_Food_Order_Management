@@ -10,13 +10,11 @@ namespace CleanArchitecture.Application.Common.Behaviours
     {
         private readonly ILogger _logger;
         private readonly IUserService _currentUserService;
-        private readonly IIdentityService _identityService;
 
-        public LoggingBehaviour(ILogger<TRequest> logger, IUserService currentUserService, IIdentityService identityService)
+        public LoggingBehaviour(ILogger<TRequest> logger, IUserService currentUserService)
         {
             _logger = logger;
             _currentUserService = currentUserService;
-            _identityService = identityService;
         }
 
         public async Task Process(TRequest request, CancellationToken cancellationToken)
@@ -25,9 +23,9 @@ namespace CleanArchitecture.Application.Common.Behaviours
 
             string userName = string.Empty;
 
-           
-            _logger.LogInformation("CleanArchitecture Request: {Name} {@UserId} {@UserName} {@Request}",
-                requestName, userName, request);
+            
+            _logger.LogInformation("CleanArchitecture Request: {Name} {@Request}",
+                requestName , request);
         }
     }
 }

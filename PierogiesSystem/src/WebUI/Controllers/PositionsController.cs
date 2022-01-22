@@ -6,7 +6,9 @@
     using Application.Positions.Queries;
     using Application.Positions.Queries.GetPosition;
     using Application.Positions.Queries.GetPositionsList;
+    using Filters;
     using Microsoft.AspNetCore.Mvc;
+    using Newtonsoft.Json.Linq;
 
     [Route("api/v1/core/positions")]
     public class PositionsController : ApiControllerBase
@@ -14,7 +16,9 @@
         [HttpGet]
         public async Task<ActionResult<PositionListAm>> GetPositions()
         {
-            PositionListAm list = await Mediator.Send(new GetPositionsListQuery());
+            PositionListAm list = new PositionListAm();
+            
+            list = await Mediator.Send(new GetPositionsListQuery());
             return Ok(list);
         }
 

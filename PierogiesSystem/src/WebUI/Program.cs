@@ -29,7 +29,6 @@ namespace CleanArchitecture.WebUI
                     
 
                     await ApplicationDbContextSeed.SeedDefaultUserAsync(context);
-                    await ApplicationDbContextSeed.SeedSampleDataAsync(context);
                 }
                 catch (Exception ex)
                 {
