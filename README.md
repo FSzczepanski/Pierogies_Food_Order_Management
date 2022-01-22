@@ -1,1 +1,1 @@
-"# Pierogies_Food_Order_Management" 
+# Platforma wspierajaca restaurację w przyjmowaniu zamówień
