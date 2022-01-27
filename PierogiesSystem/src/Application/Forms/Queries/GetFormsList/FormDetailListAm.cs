@@ -1,5 +1,6 @@
 ﻿namespace CleanArchitecture.Application.Forms.Queries.GetFormsList
 {
+    using System;
     using AutoMapper;
     using Common.Mappings;
     using Domain.Entities;
@@ -8,6 +9,7 @@
 
     public class FormDetailListAm : IMapFrom<Form>
     {
+        public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public AvailableDate FormActive { get; set; } 

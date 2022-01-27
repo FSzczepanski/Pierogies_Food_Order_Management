@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Common.Exceptions;
@@ -18,9 +19,9 @@
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<Position> Positions { get; set; }
+        public List<Guid> Positions { get; set; }
         public ICollection<AvailableDate> AvailableDates { get; set; }
-        public List<PaymentMethodEnum> PaymentMethods { get; set; }
+        public List<int> PaymentMethods { get; set; }
         public ICollection<Location> AvailableLocations { get; set; }
         public AvailableDate FormActive { get; set; }
         public bool IsActive { get; set; } 
@@ -49,10 +50,32 @@
                     _logger.LogError("Couldn't find Form with #{id}", request.Id);
                     throw new NotFoundException(nameof(Form), request.Id);
                 }
+                
+                var positions = _applicationDbContext.Positions;
+
+                var positionsObjects = new List<FormPosition>();
+                
+                foreach (var requestPositionId in request.Positions)
+                {
+                    var positionDb = positions.FirstOrDefault(p => p.Id == requestPositionId);
+                    if (positionDb != null)
+                    {
+                        positionsObjects.Add(new FormPosition
+                        {
+                            Name = positionDb.Name,
+                            Description = positionDb.Description,
+                            Amount = positionDb.Amount,
+                            Price = positionDb.Price,
+                            Vat = positionDb.Vat,
+                            PortionSize = positionDb.PortionSize
+                        });
+                    }
+                    
+                }
 
                 entity.Name = request.Name;
                 entity.Description = request.Description;
-                entity.Positions = request.Positions;
+                entity.Positions = positionsObjects;
                 entity.AvailableDates = request.AvailableDates;
                 entity.PaymentMethods = request.PaymentMethods;
                 entity.AvailableLocations = request.AvailableLocations;

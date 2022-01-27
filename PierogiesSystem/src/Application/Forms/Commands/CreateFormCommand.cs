@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using Common.Interfaces;
@@ -16,7 +17,7 @@
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public List<Position> Positions { get; set; }
+        public ICollection<Guid> Positions { get; set; }
         public ICollection<AvailableDate> AvailableDates { get; set; }
         public List<int> PaymentMethods { get; set; }
         public ICollection<Location> AvailableLocations { get; set; }
@@ -37,13 +38,35 @@
 
             public async Task<Guid> Handle(CreateFormCommand request, CancellationToken cancellationToken)
             {
+                var positions = _applicationDbContext.Positions;
+
+                var positionsObjects = new List<FormPosition>();
+                
+                foreach (var requestPositionId in request.Positions)
+                {
+                    var positionDb = positions.FirstOrDefault(p => p.Id == requestPositionId);
+                    if (positionDb != null)
+                    {
+                        positionsObjects.Add(new FormPosition
+                        {
+                            Name = positionDb.Name,
+                            Description = positionDb.Description,
+                            Amount = positionDb.Amount,
+                            Price = positionDb.Price,
+                            Vat = positionDb.Vat,
+                            PortionSize = positionDb.PortionSize
+                        });
+                    }
+                    
+                }
+                
                 var entity = new Form()
                 {
                     Name = request.Name,
                     Description = request.Description,
-                    Positions = request.Positions,
+                    Positions = positionsObjects,
                     AvailableDates = request.AvailableDates,
-                    PaymentMethods = GetPaymentMethods(request.PaymentMethods),
+                    PaymentMethods = request.PaymentMethods,
                     AvailableLocations = request.AvailableLocations,
                     FormActive = request.FormActive,
                     IsActive = request.IsActive,
@@ -55,21 +78,6 @@
                 await _applicationDbContext.Forms.AddAsync(entity, cancellationToken);
                 await _applicationDbContext.SaveChangesAsync(cancellationToken);
                 return entity.Id;
-            }
-            
-            private List<PaymentMethodEnum> GetPaymentMethods(List<int> paymentMethodsInts)
-            {
-                if (paymentMethodsInts == null)
-                {
-                    return new List<PaymentMethodEnum>();
-                }
-                var paymentMethods = new List<PaymentMethodEnum>();
-                foreach (var pmInt in paymentMethodsInts)
-                {
-                    paymentMethods.Add(PaymentMethodEnum.OnPlace);
-                }
-
-                return paymentMethods;
             }
 
         }

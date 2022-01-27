@@ -3,6 +3,7 @@
     using System;
     using System.Threading.Tasks;
     using Application.Forms.Commands;
+    using Application.Forms.Queries.GetForm;
     using Application.Forms.Queries.GetFormsList;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,6 @@
     [Route("api/v1/core/forms")]
     public class FormsController : ApiControllerBase
     {
-        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<FormListAm>> GetForms()
         {
@@ -30,6 +30,13 @@
         {
             var id = await Mediator.Send(command);
             return Ok(id);
+        }
+        
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<FormAm>> Get(Guid id)
+        {
+            FormAm model = await Mediator.Send(new GetFormListQuery() { Id = id });
+            return Ok(model);
         }
         
     }

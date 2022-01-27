@@ -3,6 +3,8 @@
     public class Location
     {
         public string Name { get; set; }
+        
+        public string Description { get; set; }
         public string Street { get; set; }
         public string ZipCode { get; set; }
         public string CityName { get; set; }
@@ -12,7 +14,7 @@
         {
         }
 
-        public Location(string name, string street, string zipCode, string cityName, string countryName)
+        public Location(string name,string description, string street, string zipCode, string cityName, string countryName)
         {
             Name = name;
             Street = street;
