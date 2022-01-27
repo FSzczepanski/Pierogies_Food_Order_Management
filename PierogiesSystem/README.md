@@ -89,6 +89,13 @@ For example, to add a new migration from the root folder:
 
  `dotnet ef migrations add "SampleMigration" --project src\Infrastructure --startup-project src\WebUI --output-dir Persistence\Migrations`
 
+update:
+`dotnet ef database update --project src\Infrastructure --startup-project src\WebUI 20220114112928_PostionsUpdateMigration`
+
+
+delete:
+`dotnet ef migrations remove --project src\Infrastructure --startup-project src\WebUI`
+
 ## Overview
 
 ### Domain
