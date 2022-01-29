@@ -2,23 +2,23 @@
 
 namespace CleanArchitecture.Infrastructure.Persistence.Migrations
 {
-    public partial class FormMigration2 : Migration
+    public partial class Orderfix : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "Description",
-                table: "Location",
-                type: "character varying(300)",
-                maxLength: 300,
-                nullable: true);
+            migrationBuilder.AddColumn<decimal>(
+                name: "DeliveryPrice",
+                table: "Orders",
+                type: "numeric",
+                nullable: false,
+                defaultValue: 0m);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Description",
-                table: "Location");
+                name: "DeliveryPrice",
+                table: "Orders");
         }
     }
 }

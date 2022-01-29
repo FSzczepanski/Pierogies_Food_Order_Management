@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using CleanArchitecture.Domain.Enums;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CleanArchitecture.Infrastructure.Persistence.Migrations
 {
-    public partial class FormMigration : Migration
+    public partial class FormAndOrderMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -50,7 +49,7 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: true),
                     Description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
-                    PaymentMethods = table.Column<List<PaymentMethodEnum>>(type: "integer[]", nullable: true),
+                    PaymentMethods = table.Column<List<int>>(type: "integer[]", nullable: true),
                     FormActive_From = table.Column<DateTime>(type: "timestamp without time zone", maxLength: 100, nullable: true),
                     FormActive_To = table.Column<DateTime>(type: "timestamp without time zone", maxLength: 100, nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
@@ -82,6 +81,41 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MyUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Orders",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Purchaser_Name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    Purchaser_Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Purchaser_Phone = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Date = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    Location_Name = table.Column<string>(type: "character varying(160)", maxLength: 160, nullable: true),
+                    Location_Description = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
+                    Location_Street = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
+                    Location_ZipCode = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    Location_CityName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Location_CountryName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    Location_IsDefault = table.Column<bool>(type: "boolean", nullable: true),
+                    Payment_PaymentMethod = table.Column<int>(type: "integer", nullable: true),
+                    Payment_PaymentDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    Payment_IsPaid = table.Column<bool>(type: "boolean", nullable: true),
+                    Payment_NeedInvoice = table.Column<bool>(type: "boolean", nullable: true),
+                    FormId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FullPrice = table.Column<decimal>(type: "numeric", nullable: false),
+                    Description = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    IdentityNumber = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Orders", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -131,25 +165,51 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Location",
+                name: "Forms_AvailableLocations",
                 columns: table => new
                 {
                     FormId = table.Column<Guid>(type: "uuid", nullable: false),
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(160)", maxLength: 160, nullable: true),
+                    Description = table.Column<string>(type: "character varying(300)", maxLength: 300, nullable: true),
                     Street = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: true),
                     ZipCode = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
                     CityName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    CountryName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true)
+                    CountryName = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    IsDefault = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Location", x => new { x.FormId, x.Id });
+                    table.PrimaryKey("PK_Forms_AvailableLocations", x => new { x.FormId, x.Id });
                     table.ForeignKey(
-                        name: "FK_Location_Forms_FormId",
+                        name: "FK_Forms_AvailableLocations_Forms_FormId",
                         column: x => x.FormId,
                         principalTable: "Forms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderPosition",
+                columns: table => new
+                {
+                    OrderId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    Vat = table.Column<decimal>(type: "numeric", nullable: false),
+                    Amount = table.Column<decimal>(type: "numeric", nullable: false),
+                    PortionSize = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderPosition", x => new { x.OrderId, x.Id });
+                    table.ForeignKey(
+                        name: "FK_OrderPosition_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -164,13 +224,19 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                 name: "Forms_AvailableDates");
 
             migrationBuilder.DropTable(
-                name: "Location");
+                name: "Forms_AvailableLocations");
 
             migrationBuilder.DropTable(
                 name: "MyUsers");
 
             migrationBuilder.DropTable(
+                name: "OrderPosition");
+
+            migrationBuilder.DropTable(
                 name: "Forms");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",

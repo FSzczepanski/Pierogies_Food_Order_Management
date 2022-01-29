@@ -31,6 +31,8 @@ namespace CleanArchitecture.Infrastructure.Persistence
         public DbSet<User> MyUsers { get; set; }
         public DbSet<Position> Positions { get; set; }
         public DbSet<Form> Forms { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<SystemSettings> SystemSettings { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

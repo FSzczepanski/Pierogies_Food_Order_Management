@@ -17,6 +17,7 @@ namespace CleanArchitecture.WebUI
     using Extensions;
     using Microsoft.OpenApi.Models;
     using Middleware;
+    using Necto.Swift.System.WebApi.Helpers;
 
     public class Startup
     {
@@ -46,6 +47,13 @@ namespace CleanArchitecture.WebUI
             services.AddScoped<IUserService, UserService>();
             services.AddHttpContextAccessor();
             
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new StringConverterHelper());
+                    options.JsonSerializerOptions.Converters.Add(new JsonDateTimeToStringConverter());
+                    options.JsonSerializerOptions.Converters.Add(new JsonDateTimeNullToStringConverter());
+                });
             
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
@@ -107,6 +115,7 @@ namespace CleanArchitecture.WebUI
                 options.WithOrigins("http://localhost:8080")
                     .AllowAnyHeader()
                     .AllowAnyMethod());
+            
             
             app.UseMiddleware<JwtMiddleware>();
         

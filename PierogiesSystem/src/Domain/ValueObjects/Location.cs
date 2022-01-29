@@ -9,6 +9,7 @@
         public string ZipCode { get; set; }
         public string CityName { get; set; }
         public string CountryName { get; set; }
+        public bool IsDefault { get; set; }
 
         public Location()
         {

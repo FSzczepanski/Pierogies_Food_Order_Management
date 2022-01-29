@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CleanArchitecture.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220127202837_FormMigration2")]
-    partial class FormMigration2
+    [Migration("20220129120058_FormAndOrderMigration")]
+    partial class FormAndOrderMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -71,6 +71,47 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Forms");
+                });
+
+            modelBuilder.Entity("CleanArchitecture.Domain.Entities.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("FormId")
+                        .HasColumnType("uuid");
+
+                    b.Property<decimal>("FullPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("IdentityNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("CleanArchitecture.Domain.Entities.Position", b =>
@@ -251,6 +292,9 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                                 .HasMaxLength(300)
                                 .HasColumnType("character varying(300)");
 
+                            b1.Property<bool>("IsDefault")
+                                .HasColumnType("boolean");
+
                             b1.Property<string>("Name")
                                 .HasMaxLength(160)
                                 .HasColumnType("character varying(160)");
@@ -265,7 +309,7 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
 
                             b1.HasKey("FormId", "Id");
 
-                            b1.ToTable("Location");
+                            b1.ToTable("Forms_AvailableLocations");
 
                             b1.WithOwner()
                                 .HasForeignKey("FormId");
@@ -278,6 +322,140 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                     b.Navigation("FormActive");
 
                     b.Navigation("Positions");
+                });
+
+            modelBuilder.Entity("CleanArchitecture.Domain.Entities.Order", b =>
+                {
+                    b.OwnsOne("CleanArchitecture.Domain.ValueObjects.Location", "Location", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("CityName")
+                                .HasMaxLength(50)
+                                .HasColumnType("character varying(50)");
+
+                            b1.Property<string>("CountryName")
+                                .HasMaxLength(50)
+                                .HasColumnType("character varying(50)");
+
+                            b1.Property<string>("Description")
+                                .HasMaxLength(300)
+                                .HasColumnType("character varying(300)");
+
+                            b1.Property<bool>("IsDefault")
+                                .HasColumnType("boolean");
+
+                            b1.Property<string>("Name")
+                                .HasMaxLength(160)
+                                .HasColumnType("character varying(160)");
+
+                            b1.Property<string>("Street")
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)");
+
+                            b1.Property<string>("ZipCode")
+                                .HasMaxLength(20)
+                                .HasColumnType("character varying(20)");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.OwnsMany("CleanArchitecture.Domain.ValueObjects.OrderPosition", "Positions", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer")
+                                .UseIdentityByDefaultColumn();
+
+                            b1.Property<decimal>("Amount")
+                                .HasColumnType("numeric");
+
+                            b1.Property<string>("Name")
+                                .HasColumnType("text");
+
+                            b1.Property<string>("PortionSize")
+                                .HasColumnType("text");
+
+                            b1.Property<decimal>("Price")
+                                .HasColumnType("numeric");
+
+                            b1.Property<decimal>("Vat")
+                                .HasColumnType("numeric");
+
+                            b1.HasKey("OrderId", "Id");
+
+                            b1.ToTable("OrderPosition");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.OwnsOne("CleanArchitecture.Domain.ValueObjects.PaymentDetails", "Payment", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<bool?>("IsPaid")
+                                .HasColumnType("boolean");
+
+                            b1.Property<bool?>("NeedInvoice")
+                                .HasColumnType("boolean");
+
+                            b1.Property<DateTime?>("PaymentDate")
+                                .HasColumnType("timestamp without time zone");
+
+                            b1.Property<int?>("PaymentMethod")
+                                .HasColumnType("integer");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.OwnsOne("CleanArchitecture.Domain.ValueObjects.Purchaser", "Purchaser", b1 =>
+                        {
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uuid");
+
+                            b1.Property<string>("Email")
+                                .HasMaxLength(100)
+                                .HasColumnType("character varying(100)");
+
+                            b1.Property<string>("Name")
+                                .HasMaxLength(150)
+                                .HasColumnType("character varying(150)");
+
+                            b1.Property<string>("Phone")
+                                .HasMaxLength(50)
+                                .HasColumnType("character varying(50)");
+
+                            b1.HasKey("OrderId");
+
+                            b1.ToTable("Orders");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.Navigation("Location");
+
+                    b.Navigation("Payment");
+
+                    b.Navigation("Positions");
+
+                    b.Navigation("Purchaser");
                 });
 #pragma warning restore 612, 618
         }

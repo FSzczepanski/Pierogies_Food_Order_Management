@@ -16,16 +16,14 @@
         [HttpGet]
         public async Task<ActionResult<PositionListAm>> GetPositions()
         {
-            PositionListAm list = new PositionListAm();
-            
-            list = await Mediator.Send(new GetPositionsListQuery());
+            var list = await Mediator.Send(new GetPositionsListQuery());
             return Ok(list);
         }
 
         [HttpPost]
         public async Task<ActionResult<Guid>> Create([FromBody] CreatePositionCommand command)
         {
-            Guid id = await Mediator.Send(command);
+            var id = await Mediator.Send(command);
             return Ok(id);
         }
 
