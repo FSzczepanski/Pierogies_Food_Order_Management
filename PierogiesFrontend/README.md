@@ -20,5 +20,7 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+### Generating NSWAG
+
+nswag run apiGenerator.nswag /runtime:Net50 /variables:host=localhost:44312
+
