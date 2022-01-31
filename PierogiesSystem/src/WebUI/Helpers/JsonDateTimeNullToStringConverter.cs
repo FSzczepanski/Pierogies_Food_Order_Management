@@ -1,4 +1,4 @@
-namespace Necto.Swift.System.WebApi.Helpers
+namespace CleanArchitecture.WebUI.Helpers
 {
     using global::System;
     using global::System.Text.Json;

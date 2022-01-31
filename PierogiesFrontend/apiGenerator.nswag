@@ -69,7 +69,7 @@
       "checksumCacheEnabled": false,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "src/core/api/swiftApi.ts",
+      "output": "src/core/api/pierogiesApi.ts",
       "newLineBehavior": "Auto"
     }
   }

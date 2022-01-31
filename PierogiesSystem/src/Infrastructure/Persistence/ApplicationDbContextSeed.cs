@@ -42,7 +42,7 @@ namespace CleanArchitecture.Infrastructure.Persistence
                 var seed = new SystemSettings()
                 {
                     Name = "Folwark Tumiany Pokoje & Restauracja",
-                    Description = "Restauracja na Warmii!",
+                    Description = "Naturalne produkty, świeże ryby, warzywa, owoce sezonowe oraz grzyby z pobliskiego lasu. Sztuka kulinarna Restauracji Folwark Tumiany została wielokrotnie uhonorowana nagrodami w rozmaitych konkursach. Restauracja również jest częścią sieci Dziedzictwa Kulinarnego Warmii Mazur i Powiśla",
                     Nip = "",
                     PhoneNumber = "508128336",
                     Location = new Location()
