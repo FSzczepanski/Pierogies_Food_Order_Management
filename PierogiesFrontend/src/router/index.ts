@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import Home from "../views/Home.vue";
+import Home from "../views/Home/Home.vue";
+import ConfirmOrder from "@/views/Home/ConfirmOrder.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -8,7 +9,13 @@ const routes: Array<RouteRecordRaw> = [
     component: Home,
   },
   {
-    path: "/about",
+    path: "/Zamowienie",
+    name: "ConfirmOrder",
+    component: ConfirmOrder,
+    props: { orderPositions: true, form: true },
+  },
+  {
+    path: "/oNas",
     name: "About",
     component: () =>
       import("../views/About.vue"),

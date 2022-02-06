@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted} from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 
 export default defineComponent({
   name: "AnimatedScroll",
@@ -17,33 +17,33 @@ export default defineComponent({
     animationType: {
       type: String,
       required: false,
-      default: 'fade'
-    }
-  }, setup() {
+      default: "fade",
+    },
+  },
+  setup() {
     const target = ref();
     const animate = ref(false);
     const observer = new IntersectionObserver(
-        ([entry]) => {
-          animate.value = entry.isIntersecting;
-        },
-        {
-          threshold: 0.5
-        }
+      ([entry]) => {
+        animate.value = entry.isIntersecting;
+      },
+      {
+        threshold: 0.5,
+      }
     );
     onMounted(() => {
       observer.observe(target.value);
     });
     return {
       animate,
-      target
+      target,
     };
-  }
+  },
 });
-
 </script>
 
 <style scoped>
-.animated-component.fade-enter-from{
+.animated-component.fade-enter-from {
   transition: none;
 }
 
@@ -56,7 +56,4 @@ export default defineComponent({
 .fade-leave-to {
   opacity: 0;
 }
-
-
-
 </style>

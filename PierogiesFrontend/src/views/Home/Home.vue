@@ -1,5 +1,5 @@
 <template>
-  <div class="imga  text-center " :style="{
+  <div class="imga text-center " :style="{
         'background-image': `url(${require('/public/background.png')})`,
         width: '300vh',
         height: '100vh',
@@ -36,7 +36,7 @@
 <script lang="ts">
 import {defineComponent, ref} from "vue";
 import {ISystemSettings, SystemSettingsClient} from "@/core/api/pierogiesApi";
-import HomeForms from "@/views/HomeForms.vue";
+import HomeForms from "@/views/Home/HomeForms.vue";
 import AnimatedScroll from "@/components/AnimatedScroll.vue";
 
 export default defineComponent({

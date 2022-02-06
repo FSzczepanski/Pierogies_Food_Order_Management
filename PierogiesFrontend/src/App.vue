@@ -1,6 +1,5 @@
 <template>
-  <div>
-  </div>
+  <div></div>
   <router-view />
 </template>
 
@@ -12,6 +11,10 @@
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #efefef;
+}
+
+body{
+  background: #151515 !important;
 }
 
 #nav {
@@ -26,66 +29,81 @@
 }
 
 #nav a.router-link-exact-active {
-  color: #B71CDB;
+  color: #b71cdb;
 }
 
-.colorMain{
+.colorMain {
   background: #232323;
 }
 
-.colorSecond{
-  background: #B71CDB;
+.colorSecond {
+  background: #b71cdb;
 }
 
-.colorThird{
-  background: #ED6A5A;
+.colorThird {
+  background: #37bfd7;
 }
 
-.textMain{
+.textMain {
   color: #efefef;
 }
 
-.textSecond{
+.textSecond {
   color: #0c0c0c;
 }
 
-.textThird{
-  color: #a713c7;
- 
+.textThird {
+  color: #ad44db;
 }
 
-.btn-primary{
-  background-color: #a713c7 !important;
-  border-color: #ab26c9 !important;
+.btn-primary {
+  background-color: rgb(255, 255, 255) !important;
+  border-color: #e8e7e8 !important;
+  color: #b71cdb !important;
+  font-weight: bold !important;
+  width: 30vh;
+  border-radius: 30px !important;
+  font-size: 18px !important;
 }
 
-.imga{
+.btn-primary:hover {
+  background-color: #b71cdb !important;
+  border-color: #e8e7e8 !important;
+  color: #e2d3e7 !important;
+  font-weight: bolder !important;
+  width: 30vh;
+  border-radius: 30px !important;
+  font-size: 18px !important;
+}
+
+
+.imga {
   max-width: 100%;
   max-height: 100%;
   background-size: cover;
-  background-position:center;
+  background-position: center;
   background-repeat: no-repeat;
-  margin:auto;
-  padding:0;
+  margin: auto;
+  padding: 0;
 }
 
-.icon{
+.icon {
   max-width: 90%;
   max-height: 20%;
   background-size: cover;
-  background-position:center;
+  background-position: center;
   background-repeat: no-repeat;
-  margin:auto;
-  padding:0;
+  margin: auto;
+  padding: 0;
 }
 
-.logoContainer{
+.logoContainer {
   background-color: #1a1a1a;
   border-color: #262626;
-  border-style: solid
+  border-style: solid;
 }
 
-.positionItem{
+.positionItem {
   border-radius: 25px;
   min-height: 160px;
   background-color: #242424;
@@ -94,4 +112,39 @@
   max-width: 700px;
 }
 
-</style>z
+.cart {
+  height: 8vh;
+  opacity: 0.9;
+  border-radius: 40px 40px 0 0;
+}
+
+.cartPositions {
+  opacity: 0.96;
+  background-color: #e7e5e8;
+  min-height: 25vh;
+}
+
+.orderRow{
+  font-size: 14px;
+  max-width: 140vh;
+}
+
+.myForm{
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 80vh;
+  border-radius: 10px;
+  opacity: 96;
+}
+
+.myInput{
+  max-width: 50vh;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/*transitions*/
+
+
+</style>
+z
