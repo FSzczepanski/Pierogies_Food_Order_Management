@@ -49,7 +49,11 @@
         <label class="form-label required mt-2"> Metoda płatności </label>
         <div>
           <el-select v-model="selectedPaymentMethodPl">
-            <el-option v-for="item in paymentMethodsPl" :key="item">
+            <el-option
+              v-for="(item, index) in paymentMethodsPl"
+              :value="item"
+              :key="index"
+            >
               {{ item }}
             </el-option>
           </el-select>
@@ -60,8 +64,9 @@
         <div>
           <el-select v-model="selectedLocation">
             <el-option
-              v-for="item in form.availableLocations"
-              :key="item"
+              v-for="(item, index) in form.availableLocations"
+              :key="index"
+              :value="item"
               :label="item.name"
             >
               {{ item.name }}
@@ -103,16 +108,124 @@
         </div>
       </div>
       <div>
-        <button
-          class="mt-4 btn btn-primary w-50 mb-3"
-          @click="goToSummary"
-        >
+        <button class="mt-4 btn btn-primary w-50 mb-3" @click="goToSummary">
           Podsumowanie
         </button>
       </div>
     </div>
+
+    <!--  Podsumowanie zamówienia  -->
     <div v-if="showSummary" class="myForm mt-5 bg-light textSecond mb-5">
-      <OrderSummary :order="orderModel"></OrderSummary>
+      <div class="mt-3" v-if="!orderConfirmed">
+        <h2>Podsumowanie zamówienia</h2>
+        <div class="mt-5 m-5">
+          <h4 class="m-4">Zamówienie</h4>
+          <div class="cartPositions bg-light">
+            <div class="textSecond row orderRow m-auto fw-bold">
+              <div class="col">Nazwa</div>
+              <div class="col">porcja</div>
+              <div class="col">Cena</div>
+              <div class="col">ilość</div>
+            </div>
+            <div
+              v-for="(item, index) in orderedPositions.items"
+              :key="index"
+              class="textSecond"
+            >
+              <hr />
+              <div class="row orderRow m-auto">
+                <div class="col">
+                  {{ item.name }}
+                </div>
+                <div class="col">
+                  {{ item.portionSize }}
+                </div>
+                <div class="col">{{ item.price }} zł</div>
+                <div class="col">
+                  {{ item.amount }}
+                </div>
+              </div>
+            </div>
+            <div class="mt-5 h5 textThird fw-bold text-decoration-underline">
+              Razem: {{ fullPrice }} zł
+            </div>
+          </div>
+
+          <div class="mt-5">
+            <h4>Dane do zamówienia</h4>
+            <div>
+              <div class="float-none">
+                <div>
+                  <label class="form-label mt-3 fw-bold">
+                    Imię i nazwisko
+                  </label>
+                  <div>
+                    {{ orderModel.purchaserName }}
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label mt-3 fw-bold"> Email </label>
+                  <div>
+                    {{ orderModel.email }}
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label mt-3 fw-bold"> Telefon </label>
+                  <div>
+                    {{ orderModel.phone }}
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label mt-3 fw-bold">
+                    Dodatkowe informacje
+                  </label>
+                  <div>
+                    {{ orderModel.description }}
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label mt-3 fw-bold">
+                    Data i godzina zamówienia
+                  </label>
+                  <div>
+                    {{ new Date(orderModel.date).toLocaleString() }}
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label mt-3 fw-bold">
+                    Metoda płatności
+                  </label>
+                  <div>
+                    {{
+                      orderModel.paymentMethod == 1
+                        ? "Na miejscu"
+                        : "Płatność online"
+                    }}
+                  </div>
+                </div>
+                <div>
+                  <label class="form-label mt-4 fw-bold"> Lokalizacja </label>
+                  <div>
+                    {{
+                      orderModel.street +
+                      " " +
+                      orderModel.zipCode +
+                      " " +
+                      orderModel.cityName
+                    }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="mt-4 btn btn-primary w-50 mb-3" @click="sendOrder">
+            Złóż zamówienie
+          </button>
+        </div>
+      </div>
+      <div v-if="orderConfirmed">
+        <OrderConfirmedVue />
+      </div>
     </div>
   </div>
 </template>
@@ -121,21 +234,25 @@
 import { defineComponent, reactive, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import {
+  CreateOrderCommand,
   ICreateOrderCommand,
   IFormAm,
   ILocation,
   IOrderPosition,
+  OrderClient,
   OrderPosition,
   PaymentMethodEnum,
 } from "@/core/api/pierogiesApi";
-import OrderSummary from "@/views/Home/OrderSummary.vue";
+import OrderConfirmedVue from "@/views/Home/OrderConfirmedView.vue";
 
 export default defineComponent({
   name: "ConfirmOrder",
-  components: { OrderSummary },
+  components: { OrderConfirmedVue },
   setup: () => {
     const route = useRoute();
     const router = useRouter();
+    const showSummary = ref(false);
+    const orderConfirmed = ref(false);
 
     if (route.params.form == undefined) {
       router.push({ name: "Home" });
@@ -149,11 +266,12 @@ export default defineComponent({
       ) as Array<IOrderPosition>,
     });
 
+    const fullPrice = ref<number>(0);
+
     const paymentMethodsPl = ref(["Na miejscu", "Przelewy24"]);
     const selectedPaymentMethodPl = ref("");
     const isDeliveryNeeded = ref(false);
 
-    const showSummary = ref(false);
     const selectedLocation = ref<ILocation>({
       name: "",
       zipCode: "",
@@ -183,11 +301,18 @@ export default defineComponent({
     });
 
     const goToSummary = () => {
-      orderModel.value.locationName = selectedLocation.value.name;
-      orderModel.value.locationDescription = selectedLocation.value.description;
-      orderModel.value.cityName = selectedLocation.value.cityName;
-      orderModel.value.street = selectedLocation.value.street;
-      orderModel.value.zipCode = selectedLocation.value.zipCode;
+      orderedPositions.items.forEach(
+        (p) => (fullPrice.value += p.price * p.amount)
+      );
+      if (!orderModel.value.street) {
+        orderModel.value.locationName = selectedLocation.value.name;
+        orderModel.value.locationDescription =
+          selectedLocation.value.description;
+        orderModel.value.cityName = selectedLocation.value.cityName;
+        orderModel.value.street = selectedLocation.value.street;
+        orderModel.value.zipCode = selectedLocation.value.zipCode;
+      }
+
       orderModel.value.isDefault = !isDeliveryNeeded.value;
       orderModel.value.paymentMethod =
         selectedPaymentMethodPl.value == "Na miejscu"
@@ -197,10 +322,25 @@ export default defineComponent({
       showSummary.value = true;
     };
 
+    function sendOrder() {
+      const client = new OrderClient(process.env.VUE_APP_API_BASE_PATH);
+      client
+        .create(orderModel.value as CreateOrderCommand)
+        .then(() => {
+          orderConfirmed.value = true;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
     return {
       orderedPositions,
+      sendOrder,
+      fullPrice,
       form,
       orderModel,
+      orderConfirmed,
       selectedLocation,
       paymentMethodsPl,
       selectedPaymentMethodPl,

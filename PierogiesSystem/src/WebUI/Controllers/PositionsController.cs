@@ -41,5 +41,12 @@
             PositionAm model = await Mediator.Send(new GetPositionQuery() { Id = id });
             return Ok(model);
         }
+
+        [HttpDelete("{id:guid}")]
+        public async Task<ActionResult> Delete(Guid id)
+        {
+            var response = await Mediator.Send(new DeletePositionCommand(id));
+            return Ok(response);
+        }
     }
 }

@@ -232,7 +232,7 @@ export class OrderClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:44312";
     }
 
-    getPositions(  cancelToken?: CancelToken | undefined): Promise<OrderListAm> {
+    getOrders(  cancelToken?: CancelToken | undefined): Promise<OrderListAm> {
         let url_ = this.baseUrl + "/api/Order";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -252,11 +252,11 @@ export class OrderClient {
                 throw _error;
             }
         }).then((_response: AxiosResponse) => {
-            return this.processGetPositions(_response);
+            return this.processGetOrders(_response);
         });
     }
 
-    protected processGetPositions(response: AxiosResponse): Promise<OrderListAm> {
+    protected processGetOrders(response: AxiosResponse): Promise<OrderListAm> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -596,6 +596,56 @@ export class PositionsClient {
         }
         return Promise.resolve<PositionAm>(<any>null);
     }
+
+    delete(id: string , cancelToken?: CancelToken | undefined): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/v1/core/positions/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <AxiosRequestConfig>{
+            responseType: "blob",
+            method: "DELETE",
+            url: url_,
+            headers: {
+                "Accept": "application/octet-stream"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDelete(_response);
+        });
+    }
+
+    protected processDelete(response: AxiosResponse): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers["content-disposition"] : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return Promise.resolve({ fileName: fileName, status: status, data: response.data as Blob, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<FileResponse | null>(<any>null);
+    }
 }
 
 export class SystemSettingsClient {
@@ -717,7 +767,7 @@ export class UserClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "https://localhost:44312";
     }
 
-    authenticate(model: AuthenticateRequest , cancelToken?: CancelToken | undefined): Promise<FileResponse | null> {
+    authenticate(model: AuthenticateRequest , cancelToken?: CancelToken | undefined): Promise<AuthenticateResponse> {
         let url_ = this.baseUrl + "/api/User/authenticate";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -725,12 +775,11 @@ export class UserClient {
 
         let options_ = <AxiosRequestConfig>{
             data: content_,
-            responseType: "blob",
             method: "POST",
             url: url_,
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             },
             cancelToken
         };
@@ -746,7 +795,7 @@ export class UserClient {
         });
     }
 
-    protected processAuthenticate(response: AxiosResponse): Promise<FileResponse | null> {
+    protected processAuthenticate(response: AxiosResponse): Promise<AuthenticateResponse> {
         const status = response.status;
         let _headers: any = {};
         if (response.headers && typeof response.headers === "object") {
@@ -756,16 +805,17 @@ export class UserClient {
                 }
             }
         }
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers["content-disposition"] : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return Promise.resolve({ fileName: fileName, status: status, data: response.data as Blob, headers: _headers });
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = AuthenticateResponse.fromJS(resultData200);
+            return result200;
         } else if (status !== 200 && status !== 204) {
             const _responseText = response.data;
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
         }
-        return Promise.resolve<FileResponse | null>(<any>null);
+        return Promise.resolve<AuthenticateResponse>(<any>null);
     }
 
     getAll(  cancelToken?: CancelToken | undefined): Promise<FileResponse | null> {
@@ -927,6 +977,7 @@ export interface IFormListAm {
 
 export class FormDetailListAm implements IFormDetailListAm {
     id!: string;
+    identityNumber!: number;
     name?: string | undefined;
     description?: string | undefined;
     formActive?: AvailableDate | undefined;
@@ -947,6 +998,7 @@ export class FormDetailListAm implements IFormDetailListAm {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.identityNumber = _data["identityNumber"];
             this.name = _data["name"];
             this.description = _data["description"];
             this.formActive = _data["formActive"] ? AvailableDate.fromJS(_data["formActive"]) : <any>undefined;
@@ -967,6 +1019,7 @@ export class FormDetailListAm implements IFormDetailListAm {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["identityNumber"] = this.identityNumber;
         data["name"] = this.name;
         data["description"] = this.description;
         data["formActive"] = this.formActive ? this.formActive.toJSON() : <any>undefined;
@@ -980,6 +1033,7 @@ export class FormDetailListAm implements IFormDetailListAm {
 
 export interface IFormDetailListAm {
     id: string;
+    identityNumber: number;
     name?: string | undefined;
     description?: string | undefined;
     formActive?: AvailableDate | undefined;
@@ -1533,6 +1587,8 @@ export interface IOrderListAm {
 }
 
 export class OrderDetailsListAm implements IOrderDetailsListAm {
+    id!: string;
+    identityNumber!: number;
     purchaserName?: string | undefined;
     date!: Date;
     locationString?: string | undefined;
@@ -1554,6 +1610,8 @@ export class OrderDetailsListAm implements IOrderDetailsListAm {
 
     init(_data?: any) {
         if (_data) {
+            this.id = _data["id"];
+            this.identityNumber = _data["identityNumber"];
             this.purchaserName = _data["purchaserName"];
             this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
             this.locationString = _data["locationString"];
@@ -1575,6 +1633,8 @@ export class OrderDetailsListAm implements IOrderDetailsListAm {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["identityNumber"] = this.identityNumber;
         data["purchaserName"] = this.purchaserName;
         data["date"] = this.date ? this.date.toISOString() : <any>undefined;
         data["locationString"] = this.locationString;
@@ -1589,6 +1649,8 @@ export class OrderDetailsListAm implements IOrderDetailsListAm {
 }
 
 export interface IOrderDetailsListAm {
+    id: string;
+    identityNumber: number;
     purchaserName?: string | undefined;
     date: Date;
     locationString?: string | undefined;
@@ -1917,6 +1979,7 @@ export class PositionAm implements IPositionAm {
     vat!: number;
     amount!: number;
     portionSize?: string | undefined;
+    positionCategory!: PositionCategoryEnum;
 
     constructor(data?: IPositionAm) {
         if (data) {
@@ -1937,6 +2000,7 @@ export class PositionAm implements IPositionAm {
             this.vat = _data["vat"];
             this.amount = _data["amount"];
             this.portionSize = _data["portionSize"];
+            this.positionCategory = _data["positionCategory"];
         }
     }
 
@@ -1957,6 +2021,7 @@ export class PositionAm implements IPositionAm {
         data["vat"] = this.vat;
         data["amount"] = this.amount;
         data["portionSize"] = this.portionSize;
+        data["positionCategory"] = this.positionCategory;
         return data; 
     }
 }
@@ -1970,6 +2035,17 @@ export interface IPositionAm {
     vat: number;
     amount: number;
     portionSize?: string | undefined;
+    positionCategory: PositionCategoryEnum;
+}
+
+export enum PositionCategoryEnum {
+    Promotion = 1,
+    Appetizer = 2,
+    Soup = 3,
+    MainCourse = 4,
+    Vegetarian = 5,
+    Drinks = 6,
+    SelfMade = 7,
 }
 
 export class CreatePositionCommand implements ICreatePositionCommand {
@@ -1979,6 +2055,7 @@ export class CreatePositionCommand implements ICreatePositionCommand {
     vat!: number;
     amount!: number;
     portionSize?: string | undefined;
+    positionCategory!: PositionCategoryEnum;
 
     constructor(data?: ICreatePositionCommand) {
         if (data) {
@@ -1997,6 +2074,7 @@ export class CreatePositionCommand implements ICreatePositionCommand {
             this.vat = _data["vat"];
             this.amount = _data["amount"];
             this.portionSize = _data["portionSize"];
+            this.positionCategory = _data["positionCategory"];
         }
     }
 
@@ -2015,6 +2093,7 @@ export class CreatePositionCommand implements ICreatePositionCommand {
         data["vat"] = this.vat;
         data["amount"] = this.amount;
         data["portionSize"] = this.portionSize;
+        data["positionCategory"] = this.positionCategory;
         return data; 
     }
 }
@@ -2026,6 +2105,7 @@ export interface ICreatePositionCommand {
     vat: number;
     amount: number;
     portionSize?: string | undefined;
+    positionCategory: PositionCategoryEnum;
 }
 
 export class UpdatePositionCommand implements IUpdatePositionCommand {
@@ -2036,6 +2116,7 @@ export class UpdatePositionCommand implements IUpdatePositionCommand {
     vat!: number;
     amount!: number;
     portionSize?: string | undefined;
+    positionCategory!: PositionCategoryEnum;
 
     constructor(data?: IUpdatePositionCommand) {
         if (data) {
@@ -2055,6 +2136,7 @@ export class UpdatePositionCommand implements IUpdatePositionCommand {
             this.vat = _data["vat"];
             this.amount = _data["amount"];
             this.portionSize = _data["portionSize"];
+            this.positionCategory = _data["positionCategory"];
         }
     }
 
@@ -2074,6 +2156,7 @@ export class UpdatePositionCommand implements IUpdatePositionCommand {
         data["vat"] = this.vat;
         data["amount"] = this.amount;
         data["portionSize"] = this.portionSize;
+        data["positionCategory"] = this.positionCategory;
         return data; 
     }
 }
@@ -2086,6 +2169,7 @@ export interface IUpdatePositionCommand {
     vat: number;
     amount: number;
     portionSize?: string | undefined;
+    positionCategory: PositionCategoryEnum;
 }
 
 export class SaveSystemSettingsCommand implements ISaveSystemSettingsCommand {
@@ -2202,7 +2286,7 @@ export interface IAuditableEntity {
     lastModifiedBy?: string | undefined;
 }
 
-export class    SystemSettings extends AuditableEntity implements ISystemSettings {
+export class SystemSettings extends AuditableEntity implements ISystemSettings {
     name?: string | undefined;
     description?: string | undefined;
     nip?: string | undefined;
@@ -2257,6 +2341,58 @@ export interface ISystemSettings extends IAuditableEntity {
     location?: Location | undefined;
     maxKmFromLocation: number;
     globalDeliveryPrice: number;
+}
+
+export class AuthenticateResponse implements IAuthenticateResponse {
+    id!: string;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    username?: string | undefined;
+    token?: string | undefined;
+
+    constructor(data?: IAuthenticateResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.username = _data["username"];
+            this.token = _data["token"];
+        }
+    }
+
+    static fromJS(data: any): AuthenticateResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new AuthenticateResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["username"] = this.username;
+        data["token"] = this.token;
+        return data; 
+    }
+}
+
+export interface IAuthenticateResponse {
+    id: string;
+    firstName?: string | undefined;
+    lastName?: string | undefined;
+    username?: string | undefined;
+    token?: string | undefined;
 }
 
 export class AuthenticateRequest implements IAuthenticateRequest {

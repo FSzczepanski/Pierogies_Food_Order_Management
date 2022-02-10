@@ -11,7 +11,7 @@
   },
   "codeGenerators": {
     "openApiToTypeScriptClient": {
-      "className": "{controller}Client",
+      "class": "{controller}Client",
       "moduleName": "",
       "namespace": "",
       "typeScriptVersion": 2.7,

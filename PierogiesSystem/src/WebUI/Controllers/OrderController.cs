@@ -10,7 +10,7 @@
     public class OrderController : ApiControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<OrderListAm>> GetPositions()
+        public async Task<ActionResult<OrderListAm>> GetOrders()
         {
             var list = await Mediator.Send(new GetOrdersListQuery());
             return Ok(list);

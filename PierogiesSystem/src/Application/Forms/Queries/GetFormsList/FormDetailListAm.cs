@@ -10,6 +10,7 @@
     public class FormDetailListAm : IMapFrom<Form>
     {
         public Guid Id { get; set; }
+        public int IdentityNumber { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public AvailableDate FormActive { get; set; } 

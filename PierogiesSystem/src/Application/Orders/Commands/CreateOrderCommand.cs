@@ -58,7 +58,7 @@
                         CountryName = request.CountryName, IsDefault = request.IsDefault, ZipCode = request.ZipCode
                     },
                     Payment = new PaymentDetails(){PaymentMethod = request.PaymentMethod,NeedInvoice = request.NeedInvoice, IsPaid = false},
-                    FullPrice = CalculateFullPrice(request.Positions, request.DeliveryPrice),
+                    FullPrice = CalculateFullPrice(request.Positions, request.DeliveryPrice, request.IsDefault),
                     FormId = request.FormId,
                     DeliveryPrice = request.DeliveryPrice,
                     Description = request.Description
@@ -69,7 +69,7 @@
                 return entity.Id;
             }
 
-            private static decimal CalculateFullPrice(List<OrderPosition> orderPositions, decimal deliveryPrice)
+            private static decimal CalculateFullPrice(List<OrderPosition> orderPositions, decimal deliveryPrice, bool isDefaultLocation)
             {
                 decimal fullPrice = 0;
                 foreach (var orderPosition in orderPositions)
@@ -77,7 +77,12 @@
                     fullPrice += orderPosition.Price * orderPosition.Amount;
                 }
 
-                return fullPrice + deliveryPrice;
+                if (!isDefaultLocation)
+                {
+                    fullPrice += deliveryPrice;
+                }
+
+                return fullPrice;
             }
         }
     }

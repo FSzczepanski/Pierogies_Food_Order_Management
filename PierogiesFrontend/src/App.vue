@@ -37,7 +37,7 @@ body{
 }
 
 .colorSecond {
-  background: #b71cdb;
+  background: #2f3344;
 }
 
 .colorThird {
@@ -56,12 +56,19 @@ body{
   color: #ad44db;
 }
 
+.textFourth {
+  color: #a1a0a0;
+}
+
+.textFourth:hover {
+  color: #636262;
+}
+
 .btn-primary {
   background-color: rgb(255, 255, 255) !important;
   border-color: #e8e7e8 !important;
   color: #b71cdb !important;
   font-weight: bold !important;
-  width: 30vh;
   border-radius: 30px !important;
   font-size: 18px !important;
 }
@@ -71,7 +78,24 @@ body{
   border-color: #e8e7e8 !important;
   color: #e2d3e7 !important;
   font-weight: bolder !important;
-  width: 30vh;
+  border-radius: 30px !important;
+  font-size: 18px !important;
+}
+
+.btn-info {
+  background-color: rgb(196, 193, 193) !important;
+  border-color: #e8e7e8 !important;
+  color: #ffffff !important;
+  font-weight: bold !important;
+  border-radius: 30px !important;
+  font-size: 18px !important;
+}
+
+.btn-info:hover {
+  background-color: #b3b3b3 !important;
+  border-color: #e8e7e8 !important;
+  color: #e2d3e7 !important;
+  font-weight: bolder !important;
   border-radius: 30px !important;
   font-size: 18px !important;
 }
@@ -107,9 +131,8 @@ body{
   border-radius: 25px;
   min-height: 160px;
   background-color: #242424;
-  font-size: large;
   opacity: 0.95;
-  max-width: 700px;
+  max-width: 840px;
 }
 
 .cart {
@@ -143,8 +166,53 @@ body{
   margin: 0 auto;
 }
 
-/*transitions*/
+.adminContent{
+  background-color: #f3f2f2;
+}
 
+.sidebarStyle{
+  min-width: 15%;
+}
+
+.wrapper {
+  min-height: 100vh;
+  display: flex;
+  width: 100%;
+}
+
+.list-group-item{
+  background-color: #2f3344 !important;
+  color: #b5bed4 !important;
+}
+.list-group-item:hover{
+  background-color: #1d1d21 !important;
+  color: #b5bed4 !important;
+}
+.list-group-item:active{
+  background-color: #24242a !important;
+  color: #b5bed4 !important;
+}
+
+.tableShape{
+  border-radius: 15px;
+  border: solid #f1f1f1;
+  margin-bottom: 50px;
+}
+
+.tableRow{
+  font-size: 16px !important;
+}
+
+.tableRow:hover{
+  background-color: #efefef !important;
+}
+
+hr {
+  margin-top: 0em !important;
+  border: none !important;
+  height: 1px !important;
+  background-color: #333 !important; 
+}
 
 </style>
-z
+

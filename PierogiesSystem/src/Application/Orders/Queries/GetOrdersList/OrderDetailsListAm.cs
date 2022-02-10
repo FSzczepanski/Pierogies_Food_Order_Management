@@ -9,6 +9,8 @@
 
     public class OrderDetailsListAm : IMapFrom<Order>
     {
+        public Guid Id { get; set; }
+        public int IdentityNumber { get; set; }
         public string PurchaserName { get; set; }
         
         public DateTime Date { get; set; }
