@@ -46,6 +46,13 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("../views/AdminPanel/components/Forms/CreateForm.vue"),
       },
       {
+        path: "updateForm/:formId",
+        name: "UpdateForm",
+        component: () => import("../views/AdminPanel/components/Forms/EditForm.vue"),
+        props: { formId: true},
+      },
+
+      {
         path: "editForm",
         name: "EditForm",
         component: () => import("../views/AdminPanel/components/Forms/EditForm.vue"),

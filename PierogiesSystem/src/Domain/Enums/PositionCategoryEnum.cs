@@ -4,6 +4,8 @@
 
     public enum PositionCategoryEnum
     {
+        [Display(Description = "Brak")]
+        None = 0,
         [Display(Description = "Oferta specjalna")]
         Promotion = 1,
         [Display(Description = "Przystawka")]

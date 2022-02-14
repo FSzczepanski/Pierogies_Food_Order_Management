@@ -5,6 +5,7 @@
     using Common.Mappings;
     using Domain.Entities;
     using Domain.Enums;
+    using Domain.ValueObjects;
 
     public class PositionAm : IMapFrom<Position>
     {
@@ -16,7 +17,11 @@
         public decimal Vat { get; set; }
         public decimal Amount { get; set; }
         public string PortionSize { get; set; }
+        
         public PositionCategoryEnum PositionCategory { get; set; }
+        
+        public bool HasPhoto { get; set; }
+        public Photo? Photo { get; set; }
 
         public void Mapping(Profile profile)
         {

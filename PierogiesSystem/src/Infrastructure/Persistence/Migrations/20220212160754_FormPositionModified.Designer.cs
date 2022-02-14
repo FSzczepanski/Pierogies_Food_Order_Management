@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using CleanArchitecture.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CleanArchitecture.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220212160754_FormPositionModified")]
+    partial class FormPositionModified
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -134,9 +136,6 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("character varying(200)");
 
-                    b.Property<bool>("HasPhoto")
-                        .HasColumnType("boolean");
-
                     b.Property<int>("IdentityNumber")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
@@ -240,51 +239,6 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("MyUsers");
-                });
-
-            modelBuilder.Entity("CleanArchitecture.Domain.ValueObjects.Photo", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("text");
-
-                    b.Property<byte[]>("FileData")
-                        .HasColumnType("bytea");
-
-                    b.Property<long>("FileSize")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("FileType")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<int>("IdentityNumber")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .UseIdentityByDefaultColumn();
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("ParentId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("PhotoName")
-                        .HasMaxLength(128)
-                        .HasColumnType("character varying(128)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("DbPhotos");
                 });
 
             modelBuilder.Entity("CleanArchitecture.Domain.Entities.Form", b =>

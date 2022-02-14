@@ -15,6 +15,7 @@ namespace CleanArchitecture.WebUI
     using Domain.Entities;
     using Extensions;
     using Helpers;
+    using Infrastructure.Services;
     using Microsoft.OpenApi.Models;
     using Middleware;
 
@@ -44,6 +45,7 @@ namespace CleanArchitecture.WebUI
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddScoped<IUserService, UserService>();
+            services.AddTransient<IPhotoService, PhotoService>();
             services.AddHttpContextAccessor();
             
             services.AddControllers()
@@ -111,7 +113,7 @@ namespace CleanArchitecture.WebUI
             // app.UseAuthorization();
             //
             app.UseCors(options =>
-                options.WithOrigins("http://localhost:8080")
+                options.WithOrigins("http://localhost:8080", "https://localhost:44312")
                     .AllowAnyHeader()
                     .AllowAnyMethod());
             

@@ -5,63 +5,45 @@
     @closeModal="hidePositionModal"
     @ok="addPositionToOrder"
   />
-  <div style="min-height: 900px">
-    <h1 class="mt-5">Wybierz menu</h1>
-
-    <div class="d-flex justify-content-center">
+  <div style="min-height: 900px" class="disable-select">
+    <div class="d-flex justify-content-center list-group list-group-horizontal">
       <div
         v-for="(item, index) in formsList"
         @click="loadFormData(item.id)"
         :key="index"
-        class="btn btn-dark m-5"
-        style="font-size: 30px"
+        class="mb-5 mt-5"
       >
-        {{ item.name }}
+        <div class="homeFormItem m-4 list-group-item">
+          <div>
+            <img class="homeFormImage" src="icon.png" alt="zdjecie" />
+          </div>
+          <div style="font-size: 24px">
+            {{ item.name }}
+          </div>
+          <div class="col-lg-10 m-auto" style="font-size: 15px">
+            {{ item.description }}
+          </div>
+        </div>
       </div>
     </div>
-    <div>
-      <div class="m-5 mx-auto w-50">
+    <div class="m-5">
+      <div class="mt-5 mb-5">
         {{ selectedForm.description }}
       </div>
-      <div
-        v-for="(item, index) in positionsList.items"
-        :key="index"
-        class="mb-5"
-      >
-        <div class="m-2 mt-5 row mx-auto border-white positionItem">
-          <div class="col-md-5">
-            <div class="textThird mt-4 fs-3 fw-bold">
+      <div class="col-lg-10 m-auto" v-for="(item, index) in positionsList.items" :key="index">
+        <div class="row positionItem" @click="showPositionModal(item)">
+          <hr class="bg-light"/>
+          <div class="col text-start ms-5 mt-3">
+            <div class="textThird fs-5 fw-bold">
               {{ item.name }}
             </div>
-            <div class="mt-2" style="font-size: 16px">
+            <div class="mt-2" style="font-size: 13px">
               {{ item.description }}
             </div>
-            <div>
-              <button
-                class="mt-4 btn btn-primary w-50"
-                @click="showPositionModal(item)"
-              >
-                Dodaj
-              </button>
-            </div>
+            <div class="fs-4 text-info mt-3">{{ item.price }} zł</div>
           </div>
-          <div class="col-md-3 mt-5">
-            <div class="colorThird fs-4 w-50 h-25 mt-3 rounded-circle">
-              {{ item.price }} zł
-            </div>
-            <div class="mt-2" style="font-size: 16px">
-              porcja: {{ item.portionSize }}
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div
-              class="imga text-center mt-1"
-              :style="{
-                'background-image': `url(${require('/public/kluska.jpg')})`,
-                width: '40vh',
-                height: '30vh',
-              }"
-            />
+          <div class="col">
+            <img class="positionImage m-3" src="kluska.jpg" alt="zdjecie" />
           </div>
         </div>
       </div>
@@ -137,15 +119,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from "vue";
+import {defineComponent, reactive, ref} from "vue";
 import {
-  FormsClient, IFormAm,
+  FormsClient,
+  FormTypeEnum,
+  IFormAm,
   IFormDetailListAm,
   IFormPosition,
   IOrderPosition,
 } from "@/core/api/pierogiesApi";
 import PositionDetailsModal from "@/views/Home/PositionDetailsModal.vue";
-import {  useRouter } from "vue-router";
+import {useRouter} from "vue-router";
 
 export default defineComponent({
   name: "HomeForms",
@@ -162,7 +146,7 @@ export default defineComponent({
     const selectedForm = ref<IFormAm>({
       name: "",
       formActive: undefined,
-      formType: undefined,
+      formType: FormTypeEnum.ForHere,
       isActive: true,
       id: "",
       deliveryPrice: 0,
@@ -219,7 +203,7 @@ export default defineComponent({
         name: "ConfirmOrder",
         params: {
           orderPositions: JSON.stringify(orderedPositions.items),
-          form: JSON.stringify(selectedForm.value)
+          form: JSON.stringify(selectedForm.value),
         },
       });
     };

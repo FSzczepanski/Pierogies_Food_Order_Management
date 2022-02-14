@@ -1379,7 +1379,7 @@ export class FormAm implements IFormAm {
     availableLocations?: Location[] | undefined;
     formActive?: AvailableDate | undefined;
     isActive!: boolean;
-    formType?: string | undefined;
+    formType!: FormTypeEnum;
     deliveryPrice!: number;
     placeOnList!: number;
 
@@ -1476,18 +1476,20 @@ export interface IFormAm {
     availableLocations?: Location[] | undefined;
     formActive?: AvailableDate | undefined;
     isActive: boolean;
-    formType?: string | undefined;
+    formType: FormTypeEnum;
     deliveryPrice: number;
     placeOnList: number;
 }
 
 export class FormPosition implements IFormPosition {
+    positionId!: string;
     name?: string | undefined;
     description?: string | undefined;
     price!: number;
     vat!: number;
     amount!: number;
     portionSize?: string | undefined;
+    positionCategory!: PositionCategoryEnum;
 
     constructor(data?: IFormPosition) {
         if (data) {
@@ -1500,12 +1502,14 @@ export class FormPosition implements IFormPosition {
 
     init(_data?: any) {
         if (_data) {
+            this.positionId = _data["positionId"];
             this.name = _data["name"];
             this.description = _data["description"];
             this.price = _data["price"];
             this.vat = _data["vat"];
             this.amount = _data["amount"];
             this.portionSize = _data["portionSize"];
+            this.positionCategory = _data["positionCategory"];
         }
     }
 
@@ -1518,23 +1522,39 @@ export class FormPosition implements IFormPosition {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["positionId"] = this.positionId;
         data["name"] = this.name;
         data["description"] = this.description;
         data["price"] = this.price;
         data["vat"] = this.vat;
         data["amount"] = this.amount;
         data["portionSize"] = this.portionSize;
+        data["positionCategory"] = this.positionCategory;
         return data; 
     }
 }
 
 export interface IFormPosition {
+    positionId: string;
     name?: string | undefined;
     description?: string | undefined;
     price: number;
     vat: number;
     amount: number;
     portionSize?: string | undefined;
+    positionCategory: PositionCategoryEnum;
+}
+
+export enum PositionCategoryEnum {
+    None = 0,
+    Promotion = 1,
+    Appetizer = 2,
+    Soup = 3,
+    MainCourse = 4,
+    Vegetarian = 5,
+    Drinks = 6,
+    SelfMade = 7,
+    Dessert = 8,
 }
 
 export enum PaymentMethodEnum {
@@ -2036,16 +2056,6 @@ export interface IPositionAm {
     amount: number;
     portionSize?: string | undefined;
     positionCategory: PositionCategoryEnum;
-}
-
-export enum PositionCategoryEnum {
-    Promotion = 1,
-    Appetizer = 2,
-    Soup = 3,
-    MainCourse = 4,
-    Vegetarian = 5,
-    Drinks = 6,
-    SelfMade = 7,
 }
 
 export class CreatePositionCommand implements ICreatePositionCommand {

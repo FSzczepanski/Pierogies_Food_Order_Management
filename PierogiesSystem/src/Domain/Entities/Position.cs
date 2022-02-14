@@ -13,5 +13,7 @@
         public decimal Amount { get; set; }
         public string PortionSize { get; set; }
         public PositionCategoryEnum PositionCategory { get; set; }
+
+        public bool HasPhoto { get; set; }
     }
 }

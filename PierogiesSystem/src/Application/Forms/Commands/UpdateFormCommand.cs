@@ -63,11 +63,13 @@
                         positionsObjects.Add(new FormPosition
                         {
                             Name = positionDb.Name,
+                            PositionId = positionDb.Id,
                             Description = positionDb.Description,
                             Amount = positionDb.Amount,
                             Price = positionDb.Price,
                             Vat = positionDb.Vat,
-                            PortionSize = positionDb.PortionSize
+                            PortionSize = positionDb.PortionSize,
+                            PositionCategory = positionDb.PositionCategory
                         });
                     }
                     

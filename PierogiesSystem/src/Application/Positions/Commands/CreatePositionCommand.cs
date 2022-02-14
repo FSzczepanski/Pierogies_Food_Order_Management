@@ -37,7 +37,8 @@
                     Vat = request.Vat,
                     Amount = request.Amount,
                     PortionSize = request.PortionSize,
-                    PositionCategory = request.PositionCategory
+                    PositionCategory = request.PositionCategory,
+                    HasPhoto = false
                 };
 
                 await _applicationDbContext.Positions.AddAsync(entity, cancellationToken);

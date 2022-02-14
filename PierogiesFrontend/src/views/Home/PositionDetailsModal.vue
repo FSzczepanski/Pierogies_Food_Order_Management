@@ -27,7 +27,7 @@
             <button type="button" class="btn btn-primary" @click="saveForm">
               Dodaj do zamówienia
             </button>
-            <button type="button" class="btn btn-secondary" @click="closeModal">
+            <button type="button" class="btn btn-info" @click="closeModal">
               Zamknij
             </button>
           </div>
@@ -71,8 +71,3 @@ export default defineComponent({
 });
 </script>
 
-<style scoped>
-.modal {
-  display: block;
-}
-</style>

@@ -13,6 +13,8 @@ using System.Threading.Tasks;
 
 namespace CleanArchitecture.Infrastructure.Persistence
 {
+    using Domain.ValueObjects;
+
     public class ApplicationDbContext : DbContext, IApplicationDbContext
     {
         private readonly IDateTime _dateTime;
@@ -33,6 +35,7 @@ namespace CleanArchitecture.Infrastructure.Persistence
         public DbSet<Form> Forms { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<SystemSettings> SystemSettings { get; set; }
+        public DbSet<Photo> DbPhotos { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
