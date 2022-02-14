@@ -2,7 +2,7 @@
   <div class="ms-5 me-5 mt-4">
     <PanelPath :paths="panelPath"/>
     <button class="btn btn-primary me-5 float-end" @click="createOrder">
-      Utwórz ręczne zamówienie
+      Dodaj ręczne zamówienie
     </button>
     <div class="mt-5 tableShape bg-light p-4 text-center">
       <div class="row fw-bold">

@@ -1,14 +1,14 @@
 ﻿namespace CleanArchitecture.WebUI.Controllers
 {
     using System;
+    using System.IO;
     using System.Threading.Tasks;
     using Application.Positions.Commands;
     using Application.Positions.Queries;
     using Application.Positions.Queries.GetPosition;
     using Application.Positions.Queries.GetPositionsList;
-    using Filters;
+    using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
-    using Newtonsoft.Json.Linq;
 
     [Route("api/v1/core/positions")]
     public class PositionsController : ApiControllerBase
@@ -25,6 +25,14 @@
         {
             var id = await Mediator.Send(command);
             return Ok(id);
+        }
+        
+        [HttpPost]
+        [Route("photo/{positionId:guid}")]
+        public async Task<ActionResult<Guid>> AddPhoto(Guid positionId ,IFormFile file)
+        {
+            var response = await Mediator.Send(new AddPhotoCommand{Photo = file, ParentId = positionId});
+            return Ok(response);
         }
 
 

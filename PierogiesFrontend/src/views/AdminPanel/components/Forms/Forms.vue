@@ -3,7 +3,7 @@
     <PanelPath :paths="panelPath"/>
     <router-link class="text-decoration-none" to="/board/createForm">
       <button class="btn btn-primary me-5 float-end" @click="createForm">
-        Utwórz nowy formularz
+        Dodaj nowy formularz
       </button>
     </router-link>
     <div class="mt-5 tableShape bg-light p-4">
@@ -34,7 +34,7 @@
             <el-checkbox v-model="item.isActive" :value="item.isActive" />
           </div>
           <div class="col-md-2">
-            <button class="btn btn-primary ms-4 bi bi-pencil-square"></button>
+            <button class="btn btn-primary ms-4 bi bi-pencil-square" @click="goToUpdateFormView(item.id)"/> 
           </div>
         </div>
       </div>
@@ -48,12 +48,14 @@ import {
   IFormDetailListAm,
 } from "@/core/api/pierogiesApi";
 import PanelPath from "@/components/PanelPath.vue";
+import {useRouter} from "vue-router";
 
 export default defineComponent({
   name: "Forms",
   components: {PanelPath},
   props: {},
   setup: function (props, { emit }) {
+    const router = useRouter();
     const panelPath = ref<Array<any>>([{label: "Formularze",path: "/board/forms"}])
     
     const formsList = reactive({ items: [] as Array<IFormDetailListAm> });
@@ -67,11 +69,18 @@ export default defineComponent({
     const createForm = () => {
       console.log("createForm");
     };
+    
+    const goToUpdateFormView = (id: string) => {
+      router.push({
+        name: "UpdateForm", params: {formId: id}
+      });
+    }
 
     return {
       formsList,
       createForm,
       panelPath,
+      goToUpdateFormView,
     };
   },
 });

@@ -1,5 +1,5 @@
 <template>
-  <div class="imga text-center " :style="{
+  <div class="imga text-center disable-select" :style="{
         'background-image': `url(${require('/public/background.png')})`,
         width: '300vh',
         height: '100vh',
@@ -64,7 +64,7 @@ export default defineComponent({
 
 
     const goto = (refName: any) => {
-      window.scrollTo(0, 750);
+      window.scrollTo(0, 1000);
     }
 
     return {

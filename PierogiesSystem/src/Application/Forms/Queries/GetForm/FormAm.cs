@@ -19,18 +19,17 @@
         public List<Location> AvailableLocations { get; set; } 
         public AvailableDate FormActive { get; set; } 
         public bool IsActive { get; set; } = false;
-        public string FormType { get; set; }
+        public FormTypeEnum FormType { get; set; }
         public decimal DeliveryPrice { get; set; } 
         public int PlaceOnList { get; set; }
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<Form,FormAm>()
+            profile.CreateMap<Form, FormAm>()
                 .ForMember(m => m.Positions, o => o.MapFrom(f => f.Positions))
                 .ForMember(m => m.AvailableDates, o => o.MapFrom(f => f.AvailableDates))
                 .ForMember(m => m.AvailableLocations, o => o.MapFrom(f => f.AvailableLocations))
-                .ForMember(m => m.PaymentMethods, o => o.MapFrom(f => HandlePaymentMethods(f.PaymentMethods)))
-                .ForMember(m => m.FormType, o => o.MapFrom(f => f.FormType.ToString()));
+                .ForMember(m => m.PaymentMethods, o => o.MapFrom(f => HandlePaymentMethods(f.PaymentMethods)));
         }
         
         private static List<PaymentMethodEnum> HandlePaymentMethods(List<int> paymentMethodsInts)

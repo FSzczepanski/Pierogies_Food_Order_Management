@@ -18,7 +18,7 @@
             RuleFor(command => command.Vat)
                 .NotNull().GreaterThan(0).LessThan(1);
             RuleFor(command => command.Amount)
-                .NotNull().GreaterThan(0).LessThan(1000);
+                .NotNull().GreaterThanOrEqualTo(0).LessThan(1000);
             RuleFor(command => command.PortionSize)
                 .MaximumLength(200);
         }
