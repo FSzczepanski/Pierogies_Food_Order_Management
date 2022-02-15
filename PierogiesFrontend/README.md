@@ -1,15 +1,21 @@
 # pierogies
 
-## Project setup
+## Getting started
+
+### Install environment
 ```
 npm install
 ```
+### Generate nswag service for your localhost
+```
+nswag run apiGenerator.nswag /runtime:Net50 /variables:host=localhost:44312
+```
 
-### Compiles and hot-reloads for development
+### Run!
+
 ```
 npm run serve
 ```
-### Generating NSWAG
 
-nswag run apiGenerator.nswag /runtime:Net50 /variables:host=localhost:44312
+
 
