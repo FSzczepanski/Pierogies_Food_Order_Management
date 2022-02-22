@@ -2,6 +2,7 @@
 {
     using System;
     using Common;
+    using Microsoft.AspNetCore.Mvc;
 
     public class Photo : AuditableEntity
     {

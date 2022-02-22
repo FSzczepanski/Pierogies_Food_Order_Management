@@ -40,17 +40,6 @@
                     throw new NotFoundException(nameof(PositionAm), request.Id);
                 }
 
-
-                if (entity.HasPhoto)
-                {
-                    Photo photo = await _photoService.GetForParent(entity.Id, cancellationToken);
-                    if (photo != null)
-                    {
-                        entity.Photo = photo;
-                    }
-                }
-
-
                 return entity;
             }
         }

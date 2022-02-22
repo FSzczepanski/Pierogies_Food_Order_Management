@@ -38,11 +38,11 @@
               />
             </div>
             <div class="mt-4">
-              <label class="form-label required"> Stawka vat </label>
+              <label class="form-label required"> Stawka vat % </label>
               <el-input
                 type="number"
-                step="0.01"
-                min="0.01"
+                step="1"
+                min="1"
                 v-model="positionModel.vat"
                 placeholder="Wprowadź stawke vat"
               />
@@ -110,7 +110,7 @@ export default defineComponent({
       amount: 0,
       positionCategory: 0,
       description: "",
-      vat: 0,
+      vat: 8,
       portionSize: "",
       price: 0,
     });
@@ -124,7 +124,7 @@ export default defineComponent({
         amount: 0,
         positionCategory: 0,
         description: "",
-        vat: 0,
+        vat: 8,
         portionSize: "",
         price: 0,
       };
@@ -146,7 +146,7 @@ export default defineComponent({
           positionModel.value.name = response.name as string;
           positionModel.value.description = response.description as string;
           positionModel.value.positionCategory = response.positionCategory;
-          positionModel.value.vat = response.vat;
+          positionModel.value.vat = response.vat * 100;
           positionModel.value.portionSize = response.portionSize as string;
           positionModel.value.price = response.price;
         })
@@ -160,6 +160,8 @@ export default defineComponent({
     };
 
     const saveForm = () => {
+      positionModel.value.vat = positionModel.value.vat / 100;
+      
       if (positionModel.value.id != "") {
         positionsClient
           .update(

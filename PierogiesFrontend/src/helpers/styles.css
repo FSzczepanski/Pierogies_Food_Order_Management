@@ -142,8 +142,9 @@ body{
 
 .cartPositions {
     opacity: 0.96;
-    background-color: #e7e5e8;
+    background-color: #fafafa;
     min-height: 25vh;
+    font-size: 23px;
 }
 
 .orderRow{
@@ -283,4 +284,12 @@ hr {
     font-size: 16px;
     background-color: #f4f8f8;
     opacity: 0.9;
+}
+
+.myNavItem{
+    color: #929090 !important;
+}
+
+.myNavItem:hover{
+    color: #ad44db  !important;
 }

@@ -6,10 +6,10 @@
       <div>
         <el-select v-model="searchModel" class="col-lg-2">
           <el-option
-            v-for="(item, index) in formsList.items"
-            :value="item.id"
-            :label="item.name"
-            :key="index"
+              v-for="(item, index) in formsList.items"
+              :value="item.id"
+              :label="item.name"
+              :key="index"
           >
             {{ item.name }}
           </el-option>
@@ -30,9 +30,9 @@
         <div class="col">Akcje</div>
       </div>
       <div
-        class="tableRow"
-        v-for="(item, index) in ordersSearched.items"
-        :key="index"
+          class="tableRow"
+          v-for="(item, index) in ordersSearched.items"
+          :key="index"
       >
         <hr />
         <div class="row m-auto text-center">
@@ -71,9 +71,11 @@ import {
 import PanelPath from "@/components/PanelPath.vue";
 
 export default defineComponent({
-  name: "Orders",
+  name: "Forms",
   components: { PanelPath },
-  props: {},
+  props: {
+    
+  },
   setup: function (props, { emit }) {
     const panelPath = ref<Array<any>>([
       { label: "Zamówienia", path: "/board/orders" },
@@ -87,26 +89,26 @@ export default defineComponent({
     const searchModel = ref<string>("");
 
     watch(
-      () => searchModel.value,
-      () => {
-        if (searchModel.value) {
-          ordersSearched.items = ordersList.items.filter(
-            (o) => o.formId == searchModel.value
-          );
+        () => searchModel.value,
+        () => {
+          if (searchModel.value) {
+            ordersSearched.items = ordersList.items.filter(
+                (o) => o.formId == searchModel.value
+            );
+          }
         }
-      }
     );
 
     const getOrders = () => {
       client
-        .getOrders()
-        .then((response) => {
-          ordersList.items = response.items as Array<IOrderDetailsListAm>;
-          ordersSearched.items = ordersList.items;
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+          .getOrders()
+          .then((response) => {
+            ordersList.items = response.items as Array<IOrderDetailsListAm>;
+            ordersSearched.items = ordersList.items;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
     };
 
     getOrders();
@@ -114,13 +116,13 @@ export default defineComponent({
     const formsList = reactive({ items: [] as Array<IFormDetailListAm> });
     const formsClient = new FormsClient(process.env.VUE_APP_API_BASE_PATH);
     formsClient
-      .getForms()
-      .then((response) => {
-        formsList.items = response.items as Array<IFormDetailListAm>;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+        .getForms()
+        .then((response) => {
+          formsList.items = response.items as Array<IFormDetailListAm>;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
 
     return {
       panelPath,

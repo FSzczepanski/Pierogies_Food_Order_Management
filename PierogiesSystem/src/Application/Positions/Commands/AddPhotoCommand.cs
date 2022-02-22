@@ -32,8 +32,12 @@
             {
                 Position entity = await _applicationDbContext.Positions.FirstOrDefaultAsync(
                     pos => pos.Id == request.ParentId, cancellationToken);
-                
 
+
+                if (entity.HasPhoto)
+                {
+                    await _photoService.DeleteForParent(entity.Id, cancellationToken);
+                }
                 if (request.Photo != null)
                 {
                     byte[] file = null;

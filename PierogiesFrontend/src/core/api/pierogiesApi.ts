@@ -646,6 +646,111 @@ export class PositionsClient {
         }
         return Promise.resolve<FileResponse | null>(<any>null);
     }
+
+    addPhoto(positionId: string, file: FileParameter | null | undefined , cancelToken?: CancelToken | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/v1/core/positions/photo/{positionId}";
+        if (positionId === undefined || positionId === null)
+            throw new Error("The parameter 'positionId' must be defined.");
+        url_ = url_.replace("{positionId}", encodeURIComponent("" + positionId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (file !== null && file !== undefined)
+            content_.append("file", file.data, file.fileName ? file.fileName : "file");
+
+        let options_ = <AxiosRequestConfig>{
+            data: content_,
+            method: "POST",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processAddPhoto(_response);
+        });
+    }
+
+    protected processAddPhoto(response: AxiosResponse): Promise<string> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return result200;
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<string>(<any>null);
+    }
+
+    getPhoto(positionId: string , cancelToken?: CancelToken | undefined): Promise<FileResponse | null> {
+        let url_ = this.baseUrl + "/api/v1/core/positions/photo/{positionId}";
+        if (positionId === undefined || positionId === null)
+            throw new Error("The parameter 'positionId' must be defined.");
+        url_ = url_.replace("{positionId}", encodeURIComponent("" + positionId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ = <AxiosRequestConfig>{
+            responseType: "blob",
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/octet-stream"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetPhoto(_response);
+        });
+    }
+
+    protected processGetPhoto(response: AxiosResponse): Promise<FileResponse | null> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers["content-disposition"] : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return Promise.resolve({ fileName: fileName, status: status, data: response.data as Blob, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<FileResponse | null>(<any>null);
+    }
 }
 
 export class SystemSettingsClient {
@@ -1489,6 +1594,8 @@ export class FormPosition implements IFormPosition {
     vat!: number;
     amount!: number;
     portionSize?: string | undefined;
+    hasPhoto!: boolean;
+    photo?: Photo | undefined;
     positionCategory!: PositionCategoryEnum;
 
     constructor(data?: IFormPosition) {
@@ -1509,6 +1616,8 @@ export class FormPosition implements IFormPosition {
             this.vat = _data["vat"];
             this.amount = _data["amount"];
             this.portionSize = _data["portionSize"];
+            this.hasPhoto = _data["hasPhoto"];
+            this.photo = _data["photo"] ? Photo.fromJS(_data["photo"]) : <any>undefined;
             this.positionCategory = _data["positionCategory"];
         }
     }
@@ -1529,6 +1638,8 @@ export class FormPosition implements IFormPosition {
         data["vat"] = this.vat;
         data["amount"] = this.amount;
         data["portionSize"] = this.portionSize;
+        data["hasPhoto"] = this.hasPhoto;
+        data["photo"] = this.photo ? this.photo.toJSON() : <any>undefined;
         data["positionCategory"] = this.positionCategory;
         return data; 
     }
@@ -1542,7 +1653,112 @@ export interface IFormPosition {
     vat: number;
     amount: number;
     portionSize?: string | undefined;
+    hasPhoto: boolean;
+    photo?: Photo | undefined;
     positionCategory: PositionCategoryEnum;
+}
+
+export abstract class AuditableEntity implements IAuditableEntity {
+    id!: string;
+    identityNumber!: number;
+    created!: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
+
+    constructor(data?: IAuditableEntity) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.identityNumber = _data["identityNumber"];
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.createdBy = _data["createdBy"];
+            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
+            this.lastModifiedBy = _data["lastModifiedBy"];
+        }
+    }
+
+    static fromJS(data: any): AuditableEntity {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'AuditableEntity' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["identityNumber"] = this.identityNumber;
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["createdBy"] = this.createdBy;
+        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
+        data["lastModifiedBy"] = this.lastModifiedBy;
+        return data; 
+    }
+}
+
+export interface IAuditableEntity {
+    id: string;
+    identityNumber: number;
+    created: Date;
+    createdBy?: string | undefined;
+    lastModified?: Date | undefined;
+    lastModifiedBy?: string | undefined;
+}
+
+export class Photo extends AuditableEntity implements IPhoto {
+    parentId!: string;
+    fileData?: string | undefined;
+    fileType?: string | undefined;
+    fileSize!: number;
+    photoName?: string | undefined;
+
+    constructor(data?: IPhoto) {
+        super(data);
+    }
+
+    init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.parentId = _data["parentId"];
+            this.fileData = _data["fileData"];
+            this.fileType = _data["fileType"];
+            this.fileSize = _data["fileSize"];
+            this.photoName = _data["photoName"];
+        }
+    }
+
+    static fromJS(data: any): Photo {
+        data = typeof data === 'object' ? data : {};
+        let result = new Photo();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["parentId"] = this.parentId;
+        data["fileData"] = this.fileData;
+        data["fileType"] = this.fileType;
+        data["fileSize"] = this.fileSize;
+        data["photoName"] = this.photoName;
+        super.toJSON(data);
+        return data; 
+    }
+}
+
+export interface IPhoto extends IAuditableEntity {
+    parentId: string;
+    fileData?: string | undefined;
+    fileType?: string | undefined;
+    fileSize: number;
+    photoName?: string | undefined;
 }
 
 export enum PositionCategoryEnum {
@@ -2000,6 +2216,8 @@ export class PositionAm implements IPositionAm {
     amount!: number;
     portionSize?: string | undefined;
     positionCategory!: PositionCategoryEnum;
+    hasPhoto!: boolean;
+    photo?: Photo | undefined;
 
     constructor(data?: IPositionAm) {
         if (data) {
@@ -2021,6 +2239,8 @@ export class PositionAm implements IPositionAm {
             this.amount = _data["amount"];
             this.portionSize = _data["portionSize"];
             this.positionCategory = _data["positionCategory"];
+            this.hasPhoto = _data["hasPhoto"];
+            this.photo = _data["photo"] ? Photo.fromJS(_data["photo"]) : <any>undefined;
         }
     }
 
@@ -2042,6 +2262,8 @@ export class PositionAm implements IPositionAm {
         data["amount"] = this.amount;
         data["portionSize"] = this.portionSize;
         data["positionCategory"] = this.positionCategory;
+        data["hasPhoto"] = this.hasPhoto;
+        data["photo"] = this.photo ? this.photo.toJSON() : <any>undefined;
         return data; 
     }
 }
@@ -2056,6 +2278,8 @@ export interface IPositionAm {
     amount: number;
     portionSize?: string | undefined;
     positionCategory: PositionCategoryEnum;
+    hasPhoto: boolean;
+    photo?: Photo | undefined;
 }
 
 export class CreatePositionCommand implements ICreatePositionCommand {
@@ -2240,60 +2464,6 @@ export interface ISaveSystemSettingsCommand {
     location?: Location | undefined;
     maxKmFromLocation: number;
     globalDeliveryPrice: number;
-}
-
-export abstract class AuditableEntity implements IAuditableEntity {
-    id!: string;
-    identityNumber!: number;
-    created!: Date;
-    createdBy?: string | undefined;
-    lastModified?: Date | undefined;
-    lastModifiedBy?: string | undefined;
-
-    constructor(data?: IAuditableEntity) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.identityNumber = _data["identityNumber"];
-            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
-            this.createdBy = _data["createdBy"];
-            this.lastModified = _data["lastModified"] ? new Date(_data["lastModified"].toString()) : <any>undefined;
-            this.lastModifiedBy = _data["lastModifiedBy"];
-        }
-    }
-
-    static fromJS(data: any): AuditableEntity {
-        data = typeof data === 'object' ? data : {};
-        throw new Error("The abstract class 'AuditableEntity' cannot be instantiated.");
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["identityNumber"] = this.identityNumber;
-        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
-        data["createdBy"] = this.createdBy;
-        data["lastModified"] = this.lastModified ? this.lastModified.toISOString() : <any>undefined;
-        data["lastModifiedBy"] = this.lastModifiedBy;
-        return data; 
-    }
-}
-
-export interface IAuditableEntity {
-    id: string;
-    identityNumber: number;
-    created: Date;
-    createdBy?: string | undefined;
-    lastModified?: Date | undefined;
-    lastModifiedBy?: string | undefined;
 }
 
 export class SystemSettings extends AuditableEntity implements ISystemSettings {
@@ -2491,6 +2661,11 @@ export interface IWeatherForecast {
     temperatureC: number;
     temperatureF: number;
     summary?: string | undefined;
+}
+
+export interface FileParameter {
+    data: any;
+    fileName: string;
 }
 
 export interface FileResponse {

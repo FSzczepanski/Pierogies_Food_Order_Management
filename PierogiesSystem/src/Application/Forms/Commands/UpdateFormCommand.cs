@@ -33,11 +33,13 @@
         {
             private readonly IApplicationDbContext _applicationDbContext;
             private readonly ILogger<Form> _logger;
+            private readonly IPhotoService _photoService;
 
-            public Handler(IApplicationDbContext applicationDbContext, ILogger<Form> logger)
+            public Handler(IApplicationDbContext applicationDbContext, ILogger<Form> logger, IPhotoService photoService)
             {
                 _applicationDbContext = applicationDbContext;
                 _logger = logger;
+                _photoService = photoService;
             }
 
             public async Task<Guid> Handle(UpdateFormCommand request, CancellationToken cancellationToken)
@@ -69,7 +71,9 @@
                             Price = positionDb.Price,
                             Vat = positionDb.Vat,
                             PortionSize = positionDb.PortionSize,
-                            PositionCategory = positionDb.PositionCategory
+                            PositionCategory = positionDb.PositionCategory,
+                            HasPhoto = positionDb.HasPhoto,
+                            Photo = positionDb.HasPhoto ? _photoService.GetForParent(positionDb.Id, cancellationToken).Result : null
                         });
                     }
                     

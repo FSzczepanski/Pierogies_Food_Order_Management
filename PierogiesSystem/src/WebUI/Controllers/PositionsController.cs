@@ -7,6 +7,7 @@
     using Application.Positions.Queries;
     using Application.Positions.Queries.GetPosition;
     using Application.Positions.Queries.GetPositionsList;
+    using Domain.ValueObjects;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
 
@@ -25,14 +26,6 @@
         {
             var id = await Mediator.Send(command);
             return Ok(id);
-        }
-        
-        [HttpPost]
-        [Route("photo/{positionId:guid}")]
-        public async Task<ActionResult<Guid>> AddPhoto(Guid positionId ,IFormFile file)
-        {
-            var response = await Mediator.Send(new AddPhotoCommand{Photo = file, ParentId = positionId});
-            return Ok(response);
         }
 
 
@@ -55,6 +48,36 @@
         {
             var response = await Mediator.Send(new DeletePositionCommand(id));
             return Ok(response);
+        }
+        
+        [HttpPut]
+        [Route("photo/{positionId:guid}")]
+        public async Task<ActionResult<Guid>> AddPhoto(Guid positionId ,IFormFile file)
+        {
+            var response = await Mediator.Send(new AddPhotoCommand{Photo = file, ParentId = positionId});
+            return Ok(response);
+        }
+        
+        /// <summary>
+        /// Get photo for specific id
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("photo/{positionId:guid}")]
+        public async Task<ActionResult> GetPhoto(Guid positionId)
+        {
+            Photo am = await Mediator.Send(new GetPositionPhotoQuery() { PositionId = positionId });
+
+            if (am?.FileData == null || am.FileData.Length == 0)
+            {
+                return new NotFoundResult();
+            }
+
+            var response = new FileContentResult(am.FileData, am.FileType)
+            {
+                FileDownloadName = am.PhotoName
+            };
+
+            return response;
         }
     }
 }

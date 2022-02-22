@@ -31,20 +31,6 @@
                 List<PositionAm> items = await _applicationDbContext.Positions.AsNoTracking()
                     .ProjectToListAsync<PositionAm>(_mapper.ConfigurationProvider);
 
-
-                foreach (var pos in items)
-                {
-                    if (pos.HasPhoto)
-                    {
-                        Photo photo = await _photoService.GetForParent(pos.Id, cancellationToken);
-                        if (photo != null)
-                        {
-                            pos.Photo = photo;
-                        }
-                    }
-                }
-
-
                 return new PositionListAm {Items = items};
             }
         }

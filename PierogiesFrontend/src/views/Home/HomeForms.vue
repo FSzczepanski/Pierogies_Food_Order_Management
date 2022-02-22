@@ -30,9 +30,13 @@
       <div class="mt-5 mb-5">
         {{ selectedForm.description }}
       </div>
-      <div class="col-lg-10 m-auto" v-for="(item, index) in positionsList.items" :key="index">
+      <div
+        class="col-lg-10 m-auto"
+        v-for="(item, index) in positionsList.items"
+        :key="index"
+      >
         <div class="row positionItem" @click="showPositionModal(item)">
-          <hr class="bg-light"/>
+          <hr class="bg-light" />
           <div class="col text-start ms-5 mt-3">
             <div class="textThird fs-5 fw-bold">
               {{ item.name }}
@@ -43,7 +47,12 @@
             <div class="fs-4 text-info mt-3">{{ item.price }} zł</div>
           </div>
           <div class="col">
-            <img class="positionImage m-3" src="kluska.jpg" alt="zdjecie" />
+            <img
+              v-if="item.hasPhoto"
+              class="positionImage m-3"
+              :src="loadPositionPhoto(item.positionId)"
+              alt="Zdjecie"
+            />
           </div>
         </div>
       </div>
@@ -108,7 +117,7 @@
             </div>
             <div class="col">
               <p class="btn text-danger h3 btn-danger">
-                <i class="bi bi-x text-white"></i>
+                <i class="bi bi-x text-white" @click="deletePosition(item)"></i>
               </p>
             </div>
           </div>
@@ -119,7 +128,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, reactive, ref} from "vue";
+import { defineComponent, reactive, ref } from "vue";
 import {
   FormsClient,
   FormTypeEnum,
@@ -129,7 +138,8 @@ import {
   IOrderPosition,
 } from "@/core/api/pierogiesApi";
 import PositionDetailsModal from "@/views/Home/PositionDetailsModal.vue";
-import {useRouter} from "vue-router";
+import { useRouter } from "vue-router";
+import { PositionPhoto } from "@/helpers/inferfaces";
 
 export default defineComponent({
   name: "HomeForms",
@@ -159,6 +169,7 @@ export default defineComponent({
     });
 
     const positionsList = reactive({ items: [] as Array<IFormPosition> });
+    const positionPhotos = ref<Array<PositionPhoto>>([]);
     const orderedPositions = reactive({ items: [] as Array<IOrderPosition> });
     const selectedPosition = ref<IOrderPosition>({
       name: "",
@@ -178,7 +189,19 @@ export default defineComponent({
       client.get(id).then((response) => {
         positionsList.items = response.positions as Array<IFormPosition>;
         selectedForm.value = response as IFormAm;
+
+        positionsList.items.forEach(p => {
+          if (p.hasPhoto) {
+            const url = process.env.VUE_APP_API_BASE_PATH;
+            positionPhotos.value.push({
+              positionId: p.positionId,
+              photoUrl: url + "/api/v1/core/positions/photo/" + p.positionId,
+            });
+          }
+        })
       });
+      
+      
     };
 
     const showPositionModal = (position: IFormPosition) => {
@@ -212,6 +235,16 @@ export default defineComponent({
       positionModalVisible.value = false;
     };
 
+    
+    const loadPositionPhoto = (itemId: string) =>{
+      return positionPhotos.value.find((photo) => photo.positionId == itemId)?.photoUrl;
+    };
+    
+    const deletePosition = (item: any) => {
+      console.log(item)
+      orderedPositions.items.filter(p => p.price == item.price);
+    };
+
     return {
       formsList,
       positionsList,
@@ -226,6 +259,8 @@ export default defineComponent({
       orderedPositions,
       confirmOrder,
       selectedForm,
+      deletePosition,
+      loadPositionPhoto,
     };
   },
 });
