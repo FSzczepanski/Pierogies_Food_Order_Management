@@ -78,6 +78,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("../views/AdminPanel/components/Orders/Orders.vue"),
       },
       {
+        path: "SummarizedOrders",
+        name: "SummarizedOrders",
+        component: () => import("../views/AdminPanel/components/Orders/OrdersSummary.vue"),
+      },
+      {
         path: "positions",
         name: "Positions",
         component: () => import("../views/AdminPanel/components/Positions/Positions.vue"),

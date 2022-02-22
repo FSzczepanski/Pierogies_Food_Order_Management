@@ -35,7 +35,7 @@
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<FormAm>> Get(Guid id)
         {
-            FormAm model = await Mediator.Send(new GetFormListQuery() { Id = id });
+            FormAm model = await Mediator.Send(new GetFormQuery() { Id = id });
             return Ok(model);
         }
         

@@ -1,8 +1,5 @@
 ﻿<template>
-  <position-modal
-      @ok="positionCreated"
-      ref="PositionModalRef"
-  />
+  <position-modal @ok="positionCreated" ref="PositionModalRef" />
   <div class="ms-5 me-5 mt-4">
     <PanelPath :paths="createPath" />
     <div class="mt-5 tableShape colorFourth">
@@ -27,7 +24,7 @@
               />
             </div>
             <div class="mt-4">
-              <label class="form-label required"> Cena dostawy </label>
+              <label class="form-label required"> Koszt dostawy </label>
               <el-input
                 v-model="createModel.deliveryPrice"
                 type="number"
@@ -140,9 +137,7 @@
 
             <div class="row">
               <div class="col">
-                <label class="mt-4 form-label required"
-                  >Wybierz
-                </label>
+                <label class="mt-4 form-label required">Wybierz </label>
                 <div>
                   <el-select class="col-lg-11" v-model="positionToAdd">
                     <el-option
@@ -160,7 +155,12 @@
                 </div>
               </div>
               <div class="col-lg-4 mb-5 me-5 mt-5">
-                <button class="btn btn-info col-lg-8" @click="openCreatePositionModal">Dodaj nową</button>
+                <button
+                  class="btn btn-info col-lg-8"
+                  @click="openCreatePositionModal"
+                >
+                  Dodaj nową
+                </button>
               </div>
             </div>
           </div>
@@ -193,7 +193,7 @@ import PositionModal from "@/views/AdminPanel/components/Positions/PositionModal
 
 export default defineComponent({
   name: "CreateForm",
-  components: {PositionModal, PanelPath },
+  components: { PositionModal, PanelPath },
   props: {},
   setup: function (props, { emit }) {
     const router = useRouter();
@@ -267,7 +267,7 @@ export default defineComponent({
     const openCreatePositionModal = () => {
       PositionModalRef.value?.openCreate();
     };
-    
+
     const positionCreated = () => {
       getPositions();
     };

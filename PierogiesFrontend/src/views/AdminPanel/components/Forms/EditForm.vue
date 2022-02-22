@@ -257,6 +257,8 @@ export default defineComponent({
             positionCategory: value.positionCategory as PositionCategoryEnum,
             portionSize: value.portionSize,
             price: value.price,
+            hasPhoto: value.hasPhoto,
+            photo: value.photo
           });
         });
         editModel.value.isActive = response.isActive;

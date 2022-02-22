@@ -8,8 +8,8 @@
     <div class="p-5 h4 me-5" id="nav">
       <router-link class="m-1" to="/">Zamów</router-link>
       |
-      <a class="m-2" href="https://staryfolwark.com.pl/nf/">Folwark</a> |
-      <router-link class="m-1" to="/about">O nas</router-link>
+      <a class="m-2 myNavItem" href="https://staryfolwark.com.pl/nf/">Folwark</a> |
+      <router-link class="m-1 myNavItem" to="/about">O nas</router-link>
     </div>
     <animated-scroll>
       <div class="float-end logoContainer w-50 mt-3 me-5">
