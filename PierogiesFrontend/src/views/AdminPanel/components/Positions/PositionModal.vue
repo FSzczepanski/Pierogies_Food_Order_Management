@@ -54,6 +54,12 @@
                 placeholder="Wprowadź nazwę pozycji"
               />
             </div>
+            <div class="mt-4">
+              <label class="form-label required"> Zdjęcie </label>
+              <div>
+                <input class="form-control" type="file" @change="photoChanged" />
+              </div>
+            </div>
             <label class="mt-4 form-label required"> Kategoria </label>
             <div>
               <el-select
@@ -85,9 +91,10 @@
   </teleport>
 </template>
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, reactive, ref } from "vue";
 import {
   CreatePositionCommand,
+  FileParameter,
   ICreatePositionCommand,
   PositionCategoryEnum,
   PositionsClient,
@@ -95,6 +102,12 @@ import {
 } from "@/core/api/pierogiesApi";
 import { PositionCategoryEnumTranslation } from "@/helpers/enums";
 import { toArray } from "@/helpers/enums";
+import {
+  ElFile,
+  UploadFile,
+} from "element-plus/es/components/upload/src/upload.type";
+import { ElMessage } from "element-plus";
+import axios from "axios";
 
 export default defineComponent({
   name: "PositionModal",
@@ -159,9 +172,36 @@ export default defineComponent({
       showModal.value = true;
     };
 
+    const photoFile = reactive({ photo: new FormData() });
+
+    const photoChanged = (event: any) => {
+      var photo = event.target.files[0];
+      photoFile.photo.append("file", photo);
+    };
+
+    const sendPhoto = (positionId: string) => {
+      const url = process.env.VUE_APP_API_BASE_PATH;
+      axios
+        .put(
+          url + "/api/v1/core/positions/photo/" + positionId,
+          photoFile.photo,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        )
+        .then(() => {
+          console.log("success");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
     const saveForm = () => {
       positionModel.value.vat = positionModel.value.vat / 100;
-      
+
       if (positionModel.value.id != "") {
         positionsClient
           .update(
@@ -169,6 +209,7 @@ export default defineComponent({
             positionModel.value.id
           )
           .then(() => {
+            sendPhoto(positionModel.value.id);
             emit("ok");
             closeModal();
           })
@@ -180,7 +221,8 @@ export default defineComponent({
 
         positionsClient
           .create(model as CreatePositionCommand)
-          .then(() => {
+          .then((id) => {
+            sendPhoto(id);
             emit("ok");
             closeModal();
           })
@@ -201,6 +243,8 @@ export default defineComponent({
       openCreate,
       openUpdate,
       modalName,
+      photoFile,
+      photoChanged,
     };
   },
 });

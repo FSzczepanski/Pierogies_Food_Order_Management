@@ -1,5 +1,10 @@
 ﻿<template>
   <position-modal @ok="positionCreated" ref="PositionModalRef" />
+  <create-location-modal @ok="locationCreated" ref="LocationModalRef" />
+  <create-available-date-modal
+    @ok="availableDateCreated"
+    ref="AvailableDateModalRef"
+  />
   <div class="ms-5 me-5 mt-4">
     <PanelPath :paths="createPath" />
     <div class="mt-5 tableShape colorFourth">
@@ -11,6 +16,7 @@
               <label class="form-label required"> Nazwa formularza </label>
               <el-input
                 v-model="createModel.name"
+                max="40"
                 placeholder="Wprowadź nazwę formularza"
               />
             </div>
@@ -19,6 +25,7 @@
               <el-input
                 v-model="createModel.description"
                 :rows="3"
+                max="300"
                 type="textarea"
                 placeholder="Wprowadź dodatkowy opis"
               />
@@ -28,6 +35,7 @@
               <el-input
                 v-model="createModel.deliveryPrice"
                 type="number"
+                max="1000"
                 placeholder="Wprowadź cenę dostawy"
               />
             </div>
@@ -36,10 +44,11 @@
               <el-date-picker
                 style="width: 63vh"
                 v-model="formActive"
+                value-format="yyyy-MM-dd"
                 type="daterange"
-                range-separator="To"
-                start-placeholder="Start date"
-                end-placeholder="End date"
+                range-separator="do"
+                start-placeholder="Początek"
+                end-placeholder="Koniec"
               >
               </el-date-picker>
             </div>
@@ -54,9 +63,10 @@
                 <el-option
                   v-for="(item, index) in formTypeEnumValues"
                   :value="item"
+                  :label="FormTypeEnumTranslation[index]"
                   :key="index"
                 >
-                  {{ item }}
+                  {{ FormTypeEnumTranslation[index] }}
                 </el-option>
               </el-select>
             </div>
@@ -79,24 +89,71 @@
                 Dostępne lokalizacje odbioru
               </label>
               <div>
-                <el-select v-model="createModel.availableLocations" multiple>
+                <el-select v-model="availableLocationIndexes.items" multiple>
                   <el-option
                     v-for="(item, index) in locations.items"
-                    :value="item"
+                    :value="index"
                     :label="item.name"
                     :key="index"
                   >
                     {{ item.name }}
                   </el-option>
                 </el-select>
+                <button
+                  class="btn-sm btn-secondary"
+                  @click="openCreateLocationModal"
+                >
+                  <i class="bi bi-plus"></i>
+                </button>
               </div>
             </div>
-            <div class="mt-4">
+            <div class="mt-5">
               <label class="form-label required">
                 Dostępne możliwe daty odbioru
               </label>
-              <div>todo</div>
+              <div>
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Od</th>
+                      <th>Do</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(item, index) in createModel.availableDates"
+                      :key="index"
+                    >
+                      <td>
+                        <span>{{
+                          moment(item.from).format("MM/DD/YYYY hh:mm")
+                        }}</span>
+                      </td>
+                      <td>
+                        <span>{{
+                          moment(item.to).format("MM/DD/YYYY hh:mm")
+                        }}</span>
+                      </td>
+                      <td>
+                        <button
+                          class="btn btn-secondary rounded-circle ms-2"
+                          @click="deleteAvailableDate(index)"
+                        >
+                          X
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
+            <button
+              class="btn-sm btn-info"
+              @click="openCreateAvailableDateModal"
+            >
+              Dodaj
+            </button>
           </div>
         </div>
         <div class="tableShape bg-light col-lg-11 mb-5 ms-5">
@@ -180,6 +237,7 @@ import {
   CreateFormCommand,
   FormsClient,
   FormTypeEnum,
+  IAvailableDate,
   ICreateFormCommand,
   ILocation,
   IPositionAm,
@@ -188,12 +246,22 @@ import {
   SystemSettingsClient,
 } from "@/core/api/pierogiesApi";
 import { useRouter } from "vue-router";
-import { PositionCategoryEnumTranslation } from "@/helpers/enums";
+import {
+  PositionCategoryEnumTranslation,
+  FormTypeEnumTranslation,
+} from "@/helpers/enums";
 import PositionModal from "@/views/AdminPanel/components/Positions/PositionModal.vue";
-
+import CreateLocationModal from "@/views/AdminPanel/components/Forms/CreateLocationModal.vue";
+import CreateAvailableDateModal from "@/views/AdminPanel/components/Forms/CreateAvailableDateModal.vue";
+import moment from "moment/moment";
 export default defineComponent({
   name: "CreateForm",
-  components: { PositionModal, PanelPath },
+  components: {
+    CreateAvailableDateModal,
+    CreateLocationModal,
+    PositionModal,
+    PanelPath,
+  },
   props: {},
   setup: function (props, { emit }) {
     const router = useRouter();
@@ -272,13 +340,39 @@ export default defineComponent({
       getPositions();
     };
 
+    const availableLocationIndexes = reactive({ items: [] as Array<number> });
     const locations = reactive({ items: [] as Array<ILocation> });
+    const LocationModalRef = ref<typeof CreateLocationModal>();
+    const openCreateLocationModal = () => {
+      LocationModalRef.value?.openCreate();
+    };
+
+    const locationCreated = (location: ILocation) => {
+      if (location) {
+        locations.items.push(location);
+      }
+    };
+
+    const AvailableDateModalRef = ref<typeof CreateAvailableDateModal>();
+    const openCreateAvailableDateModal = () => {
+      AvailableDateModalRef.value?.openCreate();
+    };
+    const availableDateCreated = (date: IAvailableDate) => {
+      if (date) {
+        createModel.value.availableDates?.push(date as AvailableDate);
+      }
+    };
+
+    const deleteAvailableDate = (index: number) => {
+      createModel.value.availableDates?.splice(index, 1);
+    };
+
     const settingClient = new SystemSettingsClient(
       process.env.VUE_APP_API_BASE_PATH
     );
     settingClient.get().then((response) => {
       if (response.location) {
-        locations.items.push(response.location);
+        locations.items.push(response.location as ILocation);
       }
     });
 
@@ -289,6 +383,7 @@ export default defineComponent({
         from: formActive.value[0],
         to: formActive.value[1],
       } as AvailableDate;
+
       createModel.value.formType =
         selectedFormType.value == "Event"
           ? FormTypeEnum.Event
@@ -304,6 +399,12 @@ export default defineComponent({
 
       selectedPositions.items.forEach((pos) => {
         createModel.value.positions?.push(pos.id);
+      });
+
+      availableLocationIndexes.items.forEach((i) => {
+        const location = locations.items[i];
+        if (location)
+          createModel.value.availableLocations?.push(location as Location);
       });
 
       formClient
@@ -333,10 +434,20 @@ export default defineComponent({
       positionToAdd,
       locations,
       PositionCategoryEnumTranslation,
+      FormTypeEnumTranslation,
       deletePosition,
       PositionModalRef,
+      LocationModalRef,
       openCreatePositionModal,
       positionCreated,
+      locationCreated,
+      openCreateLocationModal,
+      availableLocationIndexes,
+      availableDateCreated,
+      AvailableDateModalRef,
+      openCreateAvailableDateModal,
+      moment,
+      deleteAvailableDate,
     };
   },
 });
