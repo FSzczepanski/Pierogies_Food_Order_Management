@@ -293,3 +293,13 @@ hr {
 .myNavItem:hover{
     color: #ad44db  !important;
 }
+
+.arrow-right:before {
+    content: ">";
+    font-size: 20px;
+}
+
+.arrow-left:before {
+    content: "<";
+    font-size: 20px;
+} 

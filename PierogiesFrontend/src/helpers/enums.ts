@@ -10,8 +10,14 @@
   "Desery" = 8,
 }
 
+export enum FormTypeEnumTranslation {
+  "Wydarzenie" = 0,
+  "Na miejscu" = 1,
+  "Dostawa" = 2,
+}
+
 export function toArray(enumObject: any) {
   return Object.keys(enumObject)
-      .filter(key => typeof enumObject[key] === "number")
-      .map(key => ({ id: enumObject[key], name: key }));
-};
+    .filter((key) => typeof enumObject[key] === "number")
+    .map((key) => ({ id: enumObject[key], name: key }));
+}

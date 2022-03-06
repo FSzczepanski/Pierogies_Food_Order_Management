@@ -1,5 +1,10 @@
 ﻿<template>
   <position-modal @ok="positionCreated" ref="PositionModalRef" />
+  <create-location-modal @ok="locationCreated" ref="LocationModalRef" />
+  <create-available-date-modal
+    @ok="availableDateCreated"
+    ref="AvailableDateModalRef"
+  />
   <div class="ms-5 me-5 mt-4">
     <PanelPath :paths="createPath" />
     <div class="mt-5 tableShape colorFourth">
@@ -22,10 +27,7 @@
             </div>
             <div class="mt-4">
               <label class="form-label required"> Cena dostawy </label>
-              <el-input
-                  v-model="editModel.deliveryPrice"
-                  disabled
-              />
+              <el-input v-model="editModel.deliveryPrice" disabled />
             </div>
             <div class="mt-4 mb-5">
               <label class="form-label required"> Formularz aktywny </label>
@@ -45,12 +47,12 @@
         <div class="tableShape bg-light col-lg-4 m-3">
           <div class="col-lg-8 m-auto">
             <div class="mt-4">
-            <label class="mt-4 form-label required"> Typ formularza </label>
-            <el-input
+              <label class="mt-4 form-label required"> Typ formularza </label>
+              <el-input
                 class="col-lg-8"
                 v-model="formTypeEnumValues[editModel.formType]"
                 disabled
-            />
+              />
             </div>
             <label class="mt-4 form-label required">
               Dostępne metody płatności
@@ -58,9 +60,9 @@
             <div>
               <el-select v-model="editModel.paymentMethods" multiple disabled>
                 <el-option
-                    v-for="(item, index) in paymentMethodsPl"
-                    :value="item"
-                    :key="index"
+                  v-for="(item, index) in paymentMethodsPl"
+                  :value="item"
+                  :key="index"
                 >
                   {{ paymentMethodsPl[item] }}
                 </el-option>
@@ -71,24 +73,71 @@
                 Dostępne lokalizacje odbioru
               </label>
               <div>
-                <el-select v-model="editModel.availableLocations" multiple>
+                <el-select v-model="availableLocationIndexes.items" multiple>
                   <el-option
                     v-for="(item, index) in locations.items"
-                    :value="item"
+                    :value="index"
                     :label="item.name"
                     :key="index"
                   >
                     {{ item.name }}
                   </el-option>
                 </el-select>
+                <button
+                  class="btn-sm btn-secondary"
+                  @click="openCreateLocationModal"
+                >
+                  <i class="bi bi-plus"></i>
+                </button>
               </div>
             </div>
-            <div class="mt-4">
+            <div class="mt-5">
               <label class="form-label required">
                 Dostępne możliwe daty odbioru
               </label>
-              <div>todo</div>
+              <div>
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th>Od</th>
+                      <th>Do</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(item, index) in editModel.availableDates"
+                      :key="index"
+                    >
+                      <td>
+                        <span>{{
+                          moment(item.from).format("MM/DD/YYYY hh:mm")
+                        }}</span>
+                      </td>
+                      <td>
+                        <span>{{
+                          moment(item.to).format("MM/DD/YYYY hh:mm")
+                        }}</span>
+                      </td>
+                      <td>
+                        <button
+                          class="btn btn-secondary rounded-circle ms-2"
+                          @click="deleteAvailableDate(index)"
+                        >
+                          X
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
+            <button
+              class="btn-sm btn-info"
+              @click="openCreateAvailableDateModal"
+            >
+              Dodaj
+            </button>
           </div>
         </div>
         <div class="tableShape bg-light col-lg-11 mb-5 ms-5">
@@ -167,13 +216,14 @@ import { defineComponent, reactive, ref, watch } from "vue";
 import PanelPath from "@/components/PanelPath.vue";
 import {
   AvailableDate,
-  CreateFormCommand,
   FormsClient,
   FormTypeEnum,
+  IAvailableDate,
   ILocation,
   IPositionAm,
   IUpdateFormCommand,
-  Location, PositionCategoryEnum,
+  Location,
+  PositionCategoryEnum,
   PositionsClient,
   SystemSettingsClient,
   UpdateFormCommand,
@@ -181,10 +231,17 @@ import {
 import { useRoute, useRouter } from "vue-router";
 import { PositionCategoryEnumTranslation } from "@/helpers/enums";
 import PositionModal from "@/views/AdminPanel/components/Positions/PositionModal.vue";
-
+import CreateLocationModal from "@/views/AdminPanel/components/Forms/CreateLocationModal.vue";
+import CreateAvailableDateModal from "@/views/AdminPanel/components/Forms/CreateAvailableDateModal.vue";
+import moment from "moment/moment";
 export default defineComponent({
   name: "UpdateForm",
-  components: { PositionModal, PanelPath },
+  components: {
+    CreateAvailableDateModal,
+    CreateLocationModal,
+    PositionModal,
+    PanelPath,
+  },
   props: {},
   setup: function (props, { emit }) {
     const router = useRouter();
@@ -249,7 +306,7 @@ export default defineComponent({
         response.positions?.forEach((value) => {
           selectedPositions.items.push({
             id: value.positionId,
-            identityNumber:0,
+            identityNumber: 0,
             amount: value.amount,
             description: value.description,
             vat: value.vat,
@@ -258,7 +315,7 @@ export default defineComponent({
             portionSize: value.portionSize,
             price: value.price,
             hasPhoto: value.hasPhoto,
-            photo: value.photo
+            photo: value.photo,
           });
         });
         editModel.value.isActive = response.isActive;
@@ -295,7 +352,33 @@ export default defineComponent({
       getPositions();
     };
 
+    const availableLocationIndexes = reactive({ items: [] as Array<number> });
     const locations = reactive({ items: [] as Array<ILocation> });
+    const LocationModalRef = ref<typeof CreateLocationModal>();
+    const openCreateLocationModal = () => {
+      LocationModalRef.value?.openCreate();
+    };
+
+    const locationCreated = (location: ILocation) => {
+      if (location) {
+        locations.items.push(location);
+      }
+    };
+
+    const AvailableDateModalRef = ref<typeof CreateAvailableDateModal>();
+    const openCreateAvailableDateModal = () => {
+      AvailableDateModalRef.value?.openCreate();
+    };
+    const availableDateCreated = (date: IAvailableDate) => {
+      if (date) {
+        editModel.value.availableDates?.push(date as AvailableDate);
+      }
+    };
+
+    const deleteAvailableDate = (index: number) => {
+      editModel.value.availableDates?.splice(index, 1);
+    };
+
     const settingClient = new SystemSettingsClient(
       process.env.VUE_APP_API_BASE_PATH
     );
@@ -339,6 +422,15 @@ export default defineComponent({
       PositionModalRef,
       openCreatePositionModal,
       positionCreated,
+      availableLocationIndexes,
+      LocationModalRef,
+      openCreateLocationModal,
+      locationCreated,
+      deleteAvailableDate,
+      availableDateCreated,
+      openCreateAvailableDateModal,
+      AvailableDateModalRef,
+      moment,
     };
   },
 });

@@ -190,7 +190,7 @@ export default defineComponent({
         positionsList.items = response.positions as Array<IFormPosition>;
         selectedForm.value = response as IFormAm;
 
-        positionsList.items.forEach(p => {
+        positionsList.items.forEach((p) => {
           if (p.hasPhoto) {
             const url = process.env.VUE_APP_API_BASE_PATH;
             positionPhotos.value.push({
@@ -198,10 +198,8 @@ export default defineComponent({
               photoUrl: url + "/api/v1/core/positions/photo/" + p.positionId,
             });
           }
-        })
+        });
       });
-      
-      
     };
 
     const showPositionModal = (position: IFormPosition) => {
@@ -235,14 +233,14 @@ export default defineComponent({
       positionModalVisible.value = false;
     };
 
-    
-    const loadPositionPhoto = (itemId: string) =>{
-      return positionPhotos.value.find((photo) => photo.positionId == itemId)?.photoUrl;
+    const loadPositionPhoto = (itemId: string) => {
+      return positionPhotos.value.find((photo) => photo.positionId == itemId)
+        ?.photoUrl;
     };
-    
+
     const deletePosition = (item: any) => {
-      console.log(item)
-      orderedPositions.items.filter(p => p.price == item.price);
+      console.log(item);
+      orderedPositions.items.filter((p) => p.price == item.price);
     };
 
     return {
