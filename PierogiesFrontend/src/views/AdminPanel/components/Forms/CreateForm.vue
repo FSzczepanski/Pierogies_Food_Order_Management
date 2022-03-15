@@ -35,6 +35,7 @@
               <el-input
                 v-model="createModel.deliveryPrice"
                 type="number"
+                min="0"
                 max="1000"
                 placeholder="Wprowadź cenę dostawy"
               />
@@ -42,9 +43,8 @@
             <div class="mt-4 mb-5">
               <label class="form-label required"> Formularz aktywny </label>
               <el-date-picker
-                style="width: 63vh"
+                class="w-100"
                 v-model="formActive"
-                value-format="yyyy-MM-dd"
                 type="daterange"
                 range-separator="do"
                 start-placeholder="Początek"
@@ -84,7 +84,7 @@
                 </el-option>
               </el-select>
             </div>
-            <div class="mt-4">
+            <div v-if="selectedFormType == 'Event'" class="mt-4">
               <label class="form-label required">
                 Dostępne lokalizacje odbioru
               </label>
@@ -107,7 +107,7 @@
                 </button>
               </div>
             </div>
-            <div class="mt-5">
+            <div v-if="selectedFormType === 'Event'" class="mt-5">
               <label class="form-label required">
                 Dostępne możliwe daty odbioru
               </label>
@@ -127,12 +127,12 @@
                     >
                       <td>
                         <span>{{
-                          moment(item.from).format("MM/DD/YYYY hh:mm")
+                          moment(item.from).format("MM/DD/YYYY HH:mm")
                         }}</span>
                       </td>
                       <td>
                         <span>{{
-                          moment(item.to).format("MM/DD/YYYY hh:mm")
+                          moment(item.to).format("MM/DD/YYYY HH:mm")
                         }}</span>
                       </td>
                       <td>
@@ -147,13 +147,14 @@
                   </tbody>
                 </table>
               </div>
+              <button
+                  class="btn-sm btn-info"
+                  @click="openCreateAvailableDateModal"
+              >
+                Dodaj
+              </button>
             </div>
-            <button
-              class="btn-sm btn-info"
-              @click="openCreateAvailableDateModal"
-            >
-              Dodaj
-            </button>
+            
           </div>
         </div>
         <div class="tableShape bg-light col-lg-11 mb-5 ms-5">
@@ -254,6 +255,7 @@ import PositionModal from "@/views/AdminPanel/components/Positions/PositionModal
 import CreateLocationModal from "@/views/AdminPanel/components/Forms/CreateLocationModal.vue";
 import CreateAvailableDateModal from "@/views/AdminPanel/components/Forms/CreateAvailableDateModal.vue";
 import moment from "moment/moment";
+import {showToast} from "@/helpers/confirmationsAdapter";
 export default defineComponent({
   name: "CreateForm",
   components: {
@@ -295,7 +297,7 @@ export default defineComponent({
     getPositions();
 
     //temp values to createModel
-    const formActive = ref();
+    const formActive = ref<any>('');
     const selectedPaymentMethodsPl = ref<Array<string>>([]);
     const selectedFormType = ref();
     const selectedPositions = reactive({ items: [] as Array<IPositionAm> });
@@ -357,9 +359,9 @@ export default defineComponent({
     const openCreateAvailableDateModal = () => {
       AvailableDateModalRef.value?.openCreate();
     };
-    const availableDateCreated = (date: IAvailableDate) => {
-      if (date) {
-        createModel.value.availableDates?.push(date as AvailableDate);
+    const availableDateCreated = (from: Date, to: Date) => {
+      if (from && to) {
+        createModel.value.availableDates?.push({from: from, to: to} as AvailableDate);
       }
     };
 
@@ -416,6 +418,7 @@ export default defineComponent({
           console.log("sukces, " + response);
         })
         .catch((err) => {
+          showToast("Wystąpił błąd podczas wysyłania, wypełnij wszystkie pola!");
           console.log(err);
         });
     };

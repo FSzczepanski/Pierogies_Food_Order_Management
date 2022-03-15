@@ -11,10 +11,10 @@
     [Route("api/v1/core/forms")]
     public class FormsController : ApiControllerBase
     {
-        [HttpGet]
-        public async Task<ActionResult<FormListAm>> GetForms()
+        [HttpGet("{justActive:bool?}")]
+        public async Task<ActionResult<FormListAm>> GetForms(bool justActive = false)
         {
-            FormListAm list = await Mediator.Send(new GetFormsListQuery());
+            FormListAm list = await Mediator.Send(new GetFormsListQuery(){JustActive = justActive});
             return Ok(list);
         }
 
@@ -22,7 +22,7 @@
         public async Task<ActionResult<Guid>> Create([FromBody] CreateFormCommand command)
         {
             Guid id = await Mediator.Send(command);
-            return Ok(command);
+            return Ok(id);
         }
 
         [HttpPut("{id:guid}")]

@@ -57,7 +57,11 @@
             <div class="mt-4">
               <label class="form-label required"> Zdjęcie </label>
               <div>
-                <input class="form-control" type="file" @change="photoChanged" />
+                <input
+                  class="form-control"
+                  type="file"
+                  @change="photoChanged"
+                />
               </div>
             </div>
             <label class="mt-4 form-label required"> Kategoria </label>
@@ -108,6 +112,7 @@ import {
 } from "element-plus/es/components/upload/src/upload.type";
 import { ElMessage } from "element-plus";
 import axios from "axios";
+import { showToast } from "@/helpers/confirmationsAdapter";
 
 export default defineComponent({
   name: "PositionModal",
@@ -227,6 +232,9 @@ export default defineComponent({
             closeModal();
           })
           .catch((err) => {
+            showToast(
+              "Wystąpił błąd podczas wysyłania, wypełnij wszystkie pola!"
+            );
             console.log(err);
           });
       }

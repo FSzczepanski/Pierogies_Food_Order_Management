@@ -12,15 +12,28 @@
             </div>
           </div>
           <div class="modal-body m-auto mt-4">
-            <el-date-picker
-              v-model="formActive"
-              value-format="yyyy-MM-dd hh-mm"
-              type="datetimerange"
-              range-separator="do"
-              start-placeholder="Początek"
-              end-placeholder="Koniec"
-            >
-            </el-date-picker>
+            <div>
+              <label> Od </label>
+            </div>
+            <div>
+              <el-date-picker
+                class="m-3"
+                v-model="from"
+                type="datetime"
+                placeholder="Wybierz date i godzine"
+              />
+            </div>
+            <div>
+              <label> Do </label>
+            </div>
+            <div>
+              <el-date-picker
+                class="m-3"
+                v-model="to"
+                type="datetime"
+                placeholder="Wybierz date i godzine"
+              />
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" @click="saveForm">
@@ -37,7 +50,7 @@
 </template>
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { IAvailableDate } from "@/core/api/pierogiesApi";
+import { showToast } from "@/helpers/confirmationsAdapter";
 
 export default defineComponent({
   name: "CreateAvailableDateModal",
@@ -45,20 +58,14 @@ export default defineComponent({
   emits: ["ok"],
   setup: function (props, { emit }) {
     const modalName = ref("Dodaj nowy zakres dat");
-    const formActive = ref();
-    const availableDateModel = ref<IAvailableDate>({
-      from: new Date(),
-      to: new Date()
-    });
+    const from = ref();
+    const to = ref();
 
     const showModal = ref(false);
     const closeModal = () => {
       showModal.value = false;
-      availableDateModel.value = {
-        from: new Date(),
-        to: new Date()
-      };
-      formActive.value = undefined;
+      from.value = undefined;
+      to.value = undefined;
     };
 
     const openCreate = () => {
@@ -66,19 +73,22 @@ export default defineComponent({
     };
 
     const saveForm = () => {
-      availableDateModel.value = {
-        from: formActive.value[0],
-        to: formActive.value[1],
-      };
-      
-      emit("ok", availableDateModel as IAvailableDate);
-      closeModal();
+      const fromDate = from.value as Date;
+      const toDate = to.value as Date;
+
+      if (fromDate.getTime() >= toDate.getTime()) {
+        showToast("Data początkowa musi być mniejsza niż końcowa");
+      } else {
+        emit("ok", fromDate, toDate);
+        closeModal();
+      }
     };
 
     return {
       closeModal,
       saveForm,
-      formActive,
+      from,
+      to,
       showModal,
       openCreate,
       modalName,

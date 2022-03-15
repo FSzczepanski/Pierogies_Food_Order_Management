@@ -29,7 +29,7 @@
             {{ item.name }}
           </div>
           <div class="col">
-            {{ item.formType }}
+            {{ FormTypeEnumTranslation[item.formType - 1] }}
           </div>
           <div class="col">
             {{ item.placeOnList }}
@@ -53,12 +53,12 @@ import { defineComponent, reactive, ref } from "vue";
 import { FormsClient, IFormDetailListAm } from "@/core/api/pierogiesApi";
 import PanelPath from "@/components/PanelPath.vue";
 import { useRouter } from "vue-router";
+import { FormTypeEnumTranslation } from "@/helpers/enums";
 
 export default defineComponent({
   name: "Forms",
   components: { PanelPath },
-  props: {},
-  setup: function (props, { emit }) {
+  setup: function () {
     const router = useRouter();
     const panelPath = ref<Array<any>>([
       { label: "Formularze", path: "/board/forms" },
@@ -67,7 +67,7 @@ export default defineComponent({
     const formsList = reactive({ items: [] as Array<IFormDetailListAm> });
     const client = new FormsClient(process.env.VUE_APP_API_BASE_PATH);
     client
-      .getForms()
+      .getForms(false)
       .then((response) => {
         formsList.items = response.items as Array<IFormDetailListAm>;
       })
@@ -86,6 +86,7 @@ export default defineComponent({
       formsList,
       panelPath,
       goToUpdateFormView,
+      FormTypeEnumTranslation,
     };
   },
 });

@@ -23,28 +23,28 @@
               <label class="form-label required"> Opis </label>
               <el-input
                 v-model="locationModel.description"
-                placeholder="Wprowadź nazwę pozycji"
+                placeholder="Wprowadź opis"
               />
             </div>
             <div class="mt-4">
               <label class="form-label required"> Kod pocztowy </label>
               <el-input
                 v-model="locationModel.zipCode"
-                placeholder="Wprowadź nazwę pozycji"
+                placeholder="Wprowadź kod pocztowy"
               />
             </div>
             <div class="mt-4">
               <label class="form-label required"> Ulica i numer </label>
               <el-input
                 v-model="locationModel.street"
-                placeholder="Wprowadź nazwę pozycji"
+                placeholder="Wprowadź ulice i numer domu"
               />
             </div>
             <div class="mt-4">
               <label class="form-label required"> Miasto </label>
               <el-input
                 v-model="locationModel.cityName"
-                placeholder="Wprowadź nazwę pozycji"
+                placeholder="Wprowadź miasto"
               />
             </div>
           </div>

@@ -15,6 +15,11 @@ const routes: Array<RouteRecordRaw> = [
     props: { orderPositions: true, form: true },
   },
   {
+    path: "/Zamowienie/Potwierdzono",
+    name: "OrderConfirmed",
+    component: () => import("../views/Home/OrderConfirmedView.vue"),
+  },
+  {
     path: "/oNas",
     name: "About",
     component: () => import("../views/About.vue"),
@@ -38,24 +43,28 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "forms",
         name: "Forms",
-        component: () => import("../views/AdminPanel/components/Forms/Forms.vue"),
+        component: () =>
+          import("../views/AdminPanel/components/Forms/Forms.vue"),
       },
       {
         path: "createForm",
         name: "CreateForm",
-        component: () => import("../views/AdminPanel/components/Forms/CreateForm.vue"),
+        component: () =>
+          import("../views/AdminPanel/components/Forms/CreateForm.vue"),
       },
       {
         path: "updateForm/:formId",
         name: "UpdateForm",
-        component: () => import("../views/AdminPanel/components/Forms/EditForm.vue"),
-        props: { formId: true},
+        component: () =>
+          import("../views/AdminPanel/components/Forms/EditForm.vue"),
+        props: { formId: true },
       },
 
       {
         path: "editForm",
         name: "EditForm",
-        component: () => import("../views/AdminPanel/components/Forms/EditForm.vue"),
+        component: () =>
+          import("../views/AdminPanel/components/Forms/EditForm.vue"),
       },
       {
         path: "settings",
@@ -75,17 +84,20 @@ const routes: Array<RouteRecordRaw> = [
       {
         path: "orders",
         name: "Orders",
-        component: () => import("../views/AdminPanel/components/Orders/Orders.vue"),
+        component: () =>
+          import("../views/AdminPanel/components/Orders/Orders.vue"),
       },
       {
         path: "SummarizedOrders",
         name: "SummarizedOrders",
-        component: () => import("../views/AdminPanel/components/Orders/OrdersSummary.vue"),
+        component: () =>
+          import("../views/AdminPanel/components/Orders/OrdersSummary.vue"),
       },
       {
         path: "positions",
         name: "Positions",
-        component: () => import("../views/AdminPanel/components/Positions/Positions.vue"),
+        component: () =>
+          import("../views/AdminPanel/components/Positions/Positions.vue"),
       },
     ],
   },

@@ -17,7 +17,7 @@
             
             
             RuleFor(command => command.LocationName)
-                .NotNull().NotEmpty().MaximumLength(150);;
+                .MaximumLength(150);;
             RuleFor(command => command.LocationDescription)
                 .MaximumLength(300);
             RuleFor(command => command.Street)

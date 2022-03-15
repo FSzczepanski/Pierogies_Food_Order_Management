@@ -1,5 +1,4 @@
 ﻿import { ElMessageBox } from "element-plus";
-import {App} from "vue";
 
 export function confirmDelete(success: any): void {
   ElMessageBox.confirm("Wybrana pozycja zostanie usunięta", {
@@ -9,5 +8,13 @@ export function confirmDelete(success: any): void {
     customClass: "customMessageBoxClass",
   }).then(() => {
     success();
+  });
+}
+
+export function showToast(message: string): void {
+  ElMessageBox.alert(message, 'Uwaga!',{
+    confirmButtonText: "Ok",
+    type: "warning",
+    customClass: "customMessageBoxClass",
   });
 }

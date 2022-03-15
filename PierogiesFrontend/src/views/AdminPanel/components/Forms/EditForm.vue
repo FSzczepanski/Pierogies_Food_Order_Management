@@ -1,6 +1,5 @@
 ﻿<template>
   <position-modal @ok="positionCreated" ref="PositionModalRef" />
-  <create-location-modal @ok="locationCreated" ref="LocationModalRef" />
   <create-available-date-modal
     @ok="availableDateCreated"
     ref="AvailableDateModalRef"
@@ -26,13 +25,13 @@
               />
             </div>
             <div class="mt-4">
-              <label class="form-label required"> Cena dostawy </label>
+              <label class="form-label required"> Koszt dostawy </label>
               <el-input v-model="editModel.deliveryPrice" disabled />
             </div>
             <div class="mt-4 mb-5">
               <label class="form-label required"> Formularz aktywny </label>
               <el-date-picker
-                style="width: 63vh"
+                class="w-100"
                 v-model="formActive"
                 type="daterange"
                 range-separator="To"
@@ -50,7 +49,7 @@
               <label class="mt-4 form-label required"> Typ formularza </label>
               <el-input
                 class="col-lg-8"
-                v-model="formTypeEnumValues[editModel.formType]"
+                v-model="FormTypeEnumTranslation[editModel.formType-1]"
                 disabled
               />
             </div>
@@ -60,22 +59,22 @@
             <div>
               <el-select v-model="editModel.paymentMethods" multiple disabled>
                 <el-option
-                  v-for="(item, index) in paymentMethodsPl"
+                  v-for="(item, index) in editModel.paymentMethods"
                   :value="item"
                   :key="index"
                 >
-                  {{ paymentMethodsPl[item] }}
+                  {{ PaymentMethodEnumTranslation[item] }}
                 </el-option>
               </el-select>
             </div>
-            <div class="mt-4">
+            <div v-if="editModel.formType === 1" class="mt-4">
               <label class="form-label required">
                 Dostępne lokalizacje odbioru
               </label>
               <div>
-                <el-select v-model="availableLocationIndexes.items" multiple>
+                <el-select v-model="editModel.availableLocations" multiple disabled>
                   <el-option
-                    v-for="(item, index) in locations.items"
+                    v-for="(item, index) in editModel.availableLocations"
                     :value="index"
                     :label="item.name"
                     :key="index"
@@ -83,15 +82,9 @@
                     {{ item.name }}
                   </el-option>
                 </el-select>
-                <button
-                  class="btn-sm btn-secondary"
-                  @click="openCreateLocationModal"
-                >
-                  <i class="bi bi-plus"></i>
-                </button>
               </div>
             </div>
-            <div class="mt-5">
+            <div v-if="editModel.formType === 1" class="mt-5">
               <label class="form-label required">
                 Dostępne możliwe daty odbioru
               </label>
@@ -111,12 +104,12 @@
                     >
                       <td>
                         <span>{{
-                          moment(item.from).format("MM/DD/YYYY hh:mm")
+                          moment(item.from).format("MM/DD/YYYY HH:mm")
                         }}</span>
                       </td>
                       <td>
                         <span>{{
-                          moment(item.to).format("MM/DD/YYYY hh:mm")
+                          moment(item.to).format("MM/DD/YYYY HH:mm")
                         }}</span>
                       </td>
                       <td>
@@ -131,13 +124,13 @@
                   </tbody>
                 </table>
               </div>
+              <button
+                class="btn-sm btn-info"
+                @click="openCreateAvailableDateModal"
+              >
+                Dodaj
+              </button>
             </div>
-            <button
-              class="btn-sm btn-info"
-              @click="openCreateAvailableDateModal"
-            >
-              Dodaj
-            </button>
           </div>
         </div>
         <div class="tableShape bg-light col-lg-11 mb-5 ms-5">
@@ -212,33 +205,30 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref, watch } from "vue";
+import {defineComponent, onMounted, reactive, ref, watch} from "vue";
 import PanelPath from "@/components/PanelPath.vue";
 import {
   AvailableDate,
   FormsClient,
   FormTypeEnum,
-  IAvailableDate,
-  ILocation,
   IPositionAm,
   IUpdateFormCommand,
   Location,
   PositionCategoryEnum,
   PositionsClient,
-  SystemSettingsClient,
   UpdateFormCommand,
 } from "@/core/api/pierogiesApi";
-import { useRoute, useRouter } from "vue-router";
-import { PositionCategoryEnumTranslation } from "@/helpers/enums";
+import {useRoute, useRouter} from "vue-router";
+import {FormTypeEnumTranslation, PaymentMethodEnumTranslation, PositionCategoryEnumTranslation} from "@/helpers/enums";
 import PositionModal from "@/views/AdminPanel/components/Positions/PositionModal.vue";
-import CreateLocationModal from "@/views/AdminPanel/components/Forms/CreateLocationModal.vue";
 import CreateAvailableDateModal from "@/views/AdminPanel/components/Forms/CreateAvailableDateModal.vue";
 import moment from "moment/moment";
+import {showToast} from "@/helpers/confirmationsAdapter";
+
 export default defineComponent({
   name: "UpdateForm",
   components: {
     CreateAvailableDateModal,
-    CreateLocationModal,
     PositionModal,
     PanelPath,
   },
@@ -270,10 +260,10 @@ export default defineComponent({
         });
     };
 
-    getPositions();
+    
 
     //temp values to createModel
-    const formActive = ref();
+    const formActive = ref<Array<Date>>(Array.of(new Date(), new Date()));
     const selectedPositions = reactive({ items: [] as Array<IPositionAm> });
 
     const editModel = ref<IUpdateFormCommand>({
@@ -282,7 +272,7 @@ export default defineComponent({
       description: "",
       deliveryPrice: 0,
       formActive: {} as AvailableDate,
-      formType: FormTypeEnum.Event,
+      formType: FormTypeEnum.ForHere,
       availableDates: [] as Array<AvailableDate>,
       paymentMethods: [] as Array<number>,
       availableLocations: [] as Array<Location>,
@@ -291,36 +281,42 @@ export default defineComponent({
       placeOnList: 0,
     });
 
-    if (route.params.formId != "")
-      formClient.get(route.params.formId as string).then((response) => {
-        editModel.value.id = response.id;
-        editModel.value.name = response.name;
-        editModel.value.description = response.description;
-        editModel.value.deliveryPrice = response.deliveryPrice;
-        editModel.value.formActive = response.formActive;
-        editModel.value.formType = response.formType as FormTypeEnum;
-        editModel.value.availableDates = response.availableDates;
-        editModel.value.paymentMethods = response.paymentMethods;
-        editModel.value.availableLocations = response.availableLocations;
+    const getForm = () => {
+      if (route.params.formId != "")
+        formClient.get(route.params.formId as string).then((response) => {
+          editModel.value.id = response.id;
+          editModel.value.name = response.name;
+          editModel.value.description = response.description;
+          editModel.value.deliveryPrice = response.deliveryPrice;
+          editModel.value.formActive = response.formActive;
+          editModel.value.formType = response.formType;
+          editModel.value.availableDates = response.availableDates;
+          editModel.value.paymentMethods = response.paymentMethods;
+          editModel.value.availableLocations = response.availableLocations;
 
-        response.positions?.forEach((value) => {
-          selectedPositions.items.push({
-            id: value.positionId,
-            identityNumber: 0,
-            amount: value.amount,
-            description: value.description,
-            vat: value.vat,
-            name: value.name,
-            positionCategory: value.positionCategory as PositionCategoryEnum,
-            portionSize: value.portionSize,
-            price: value.price,
-            hasPhoto: value.hasPhoto,
-            photo: value.photo,
+          response.positions?.forEach((value) => {
+            selectedPositions.items.push({
+              id: value.positionId,
+              identityNumber: 0,
+              amount: value.amount,
+              description: value.description,
+              vat: value.vat,
+              name: value.name,
+              positionCategory: value.positionCategory as PositionCategoryEnum,
+              portionSize: value.portionSize,
+              price: value.price,
+              hasPhoto: value.hasPhoto,
+              photo: value.photo,
+            });
+            
+            formActive.value[0] = editModel.value.formActive?.from as Date;
+            formActive.value[1] = editModel.value.formActive?.to as Date;
           });
+          editModel.value.isActive = response.isActive;
+          editModel.value.placeOnList = response.placeOnList;
         });
-        editModel.value.isActive = response.isActive;
-        editModel.value.placeOnList = response.placeOnList;
-      });
+    };
+    
 
     const formTypeEnumValues = Object.keys(FormTypeEnum).filter((item) => {
       return isNaN(Number(item));
@@ -351,47 +347,31 @@ export default defineComponent({
     const positionCreated = () => {
       getPositions();
     };
-
-    const availableLocationIndexes = reactive({ items: [] as Array<number> });
-    const locations = reactive({ items: [] as Array<ILocation> });
-    const LocationModalRef = ref<typeof CreateLocationModal>();
-    const openCreateLocationModal = () => {
-      LocationModalRef.value?.openCreate();
-    };
-
-    const locationCreated = (location: ILocation) => {
-      if (location) {
-        locations.items.push(location);
-      }
-    };
-
+    
     const AvailableDateModalRef = ref<typeof CreateAvailableDateModal>();
     const openCreateAvailableDateModal = () => {
       AvailableDateModalRef.value?.openCreate();
     };
-    const availableDateCreated = (date: IAvailableDate) => {
-      if (date) {
-        editModel.value.availableDates?.push(date as AvailableDate);
+    const availableDateCreated = (from: Date, to: Date) => {
+      if (from && to) {
+        editModel.value.availableDates?.push({from: from, to: to} as AvailableDate);
       }
     };
 
     const deleteAvailableDate = (index: number) => {
       editModel.value.availableDates?.splice(index, 1);
     };
-
-    const settingClient = new SystemSettingsClient(
-      process.env.VUE_APP_API_BASE_PATH
-    );
-    settingClient.get().then((response) => {
-      if (response.location) {
-        locations.items.push(response.location);
-      }
-    });
+    
 
     const updateForm = () => {
       selectedPositions.items.forEach((pos) => {
         editModel.value.positions?.push(pos.id);
       });
+
+      editModel.value.formActive = {
+        from: formActive.value[0],
+        to: formActive.value[1],
+      } as AvailableDate;
 
       formClient
         .update(editModel.value as UpdateFormCommand, editModel.value.id)
@@ -402,9 +382,15 @@ export default defineComponent({
           console.log("sukces, " + response);
         })
         .catch((err) => {
+          showToast("Wypełnij wszystkie pola");
           console.log(err);
         });
     };
+
+    onMounted(() => {
+      getPositions();
+      getForm();
+    });
 
     return {
       createPath,
@@ -416,21 +402,18 @@ export default defineComponent({
       paymentMethodsPl,
       selectedPositions,
       positionToAdd,
-      locations,
       PositionCategoryEnumTranslation,
       deletePosition,
       PositionModalRef,
       openCreatePositionModal,
       positionCreated,
-      availableLocationIndexes,
-      LocationModalRef,
-      openCreateLocationModal,
-      locationCreated,
       deleteAvailableDate,
       availableDateCreated,
       openCreateAvailableDateModal,
       AvailableDateModalRef,
       moment,
+      FormTypeEnumTranslation,
+      PaymentMethodEnumTranslation,
     };
   },
 });

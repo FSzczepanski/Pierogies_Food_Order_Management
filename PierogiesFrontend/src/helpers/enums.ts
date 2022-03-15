@@ -16,6 +16,11 @@ export enum FormTypeEnumTranslation {
   "Dostawa" = 2,
 }
 
+export enum PaymentMethodEnumTranslation {
+  "Na miejscu" = 0,
+  "Przelewy24" = 1,
+}
+
 export function toArray(enumObject: any) {
   return Object.keys(enumObject)
     .filter((key) => typeof enumObject[key] === "number")

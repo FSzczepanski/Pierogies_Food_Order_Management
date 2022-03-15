@@ -181,7 +181,7 @@ export default defineComponent({
 
     const price = ref<number>(0);
 
-    client.getForms().then((response) => {
+    client.getForms(true).then((response) => {
       formsList.value = response.items as Array<IFormDetailListAm>;
     });
 
