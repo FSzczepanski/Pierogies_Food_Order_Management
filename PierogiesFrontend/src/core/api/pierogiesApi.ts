@@ -233,6 +233,109 @@ export class FormsClient {
         }
         return Promise.resolve<FormAm>(null as any);
     }
+
+    getForClient(id: string , cancelToken?: CancelToken | undefined): Promise<FormAmForClient> {
+        let url_ = this.baseUrl + "/api/v1/core/forms/forClient/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetForClient(_response);
+        });
+    }
+
+    protected processGetForClient(response: AxiosResponse): Promise<FormAmForClient> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = FormAmForClient.fromJS(resultData200);
+            return Promise.resolve<FormAmForClient>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<FormAmForClient>(null as any);
+    }
+
+    disableOrEnableForm(id: string , cancelToken?: CancelToken | undefined): Promise<string> {
+        let url_ = this.baseUrl + "/api/v1/core/forms/modifyState/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "PUT",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processDisableOrEnableForm(_response);
+        });
+    }
+
+    protected processDisableOrEnableForm(response: AxiosResponse): Promise<string> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return Promise.resolve<string>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<string>(null as any);
+    }
 }
 
 export class OrderClient {
@@ -1067,6 +1170,7 @@ export class FormDetailListAm implements IFormDetailListAm {
     formType!: FormTypeEnum;
     deliveryPrice?: number | undefined;
     placeOnList!: number;
+    minimumTotalPrice?: number | undefined;
 
     constructor(data?: IFormDetailListAm) {
         if (data) {
@@ -1088,6 +1192,7 @@ export class FormDetailListAm implements IFormDetailListAm {
             this.formType = _data["formType"];
             this.deliveryPrice = _data["deliveryPrice"];
             this.placeOnList = _data["placeOnList"];
+            this.minimumTotalPrice = _data["minimumTotalPrice"];
         }
     }
 
@@ -1109,6 +1214,7 @@ export class FormDetailListAm implements IFormDetailListAm {
         data["formType"] = this.formType;
         data["deliveryPrice"] = this.deliveryPrice;
         data["placeOnList"] = this.placeOnList;
+        data["minimumTotalPrice"] = this.minimumTotalPrice;
         return data;
     }
 }
@@ -1123,6 +1229,7 @@ export interface IFormDetailListAm {
     formType: FormTypeEnum;
     deliveryPrice?: number | undefined;
     placeOnList: number;
+    minimumTotalPrice?: number | undefined;
 }
 
 export class AvailableDate implements IAvailableDate {
@@ -1183,6 +1290,7 @@ export class CreateFormCommand implements ICreateFormCommand {
     formType!: FormTypeEnum;
     deliveryPrice?: number | undefined;
     placeOnList!: number;
+    minimumTotalPrice?: number | undefined;
 
     constructor(data?: ICreateFormCommand) {
         if (data) {
@@ -1222,6 +1330,7 @@ export class CreateFormCommand implements ICreateFormCommand {
             this.formType = _data["formType"];
             this.deliveryPrice = _data["deliveryPrice"];
             this.placeOnList = _data["placeOnList"];
+            this.minimumTotalPrice = _data["minimumTotalPrice"];
         }
     }
 
@@ -1261,6 +1370,7 @@ export class CreateFormCommand implements ICreateFormCommand {
         data["formType"] = this.formType;
         data["deliveryPrice"] = this.deliveryPrice;
         data["placeOnList"] = this.placeOnList;
+        data["minimumTotalPrice"] = this.minimumTotalPrice;
         return data;
     }
 }
@@ -1277,6 +1387,7 @@ export interface ICreateFormCommand {
     formType: FormTypeEnum;
     deliveryPrice?: number | undefined;
     placeOnList: number;
+    minimumTotalPrice?: number | undefined;
 }
 
 export class Location implements ILocation {
@@ -1352,6 +1463,7 @@ export class UpdateFormCommand implements IUpdateFormCommand {
     formType!: FormTypeEnum;
     deliveryPrice?: number | undefined;
     placeOnList!: number;
+    minimumTotalPrice?: number | undefined;
 
     constructor(data?: IUpdateFormCommand) {
         if (data) {
@@ -1392,6 +1504,7 @@ export class UpdateFormCommand implements IUpdateFormCommand {
             this.formType = _data["formType"];
             this.deliveryPrice = _data["deliveryPrice"];
             this.placeOnList = _data["placeOnList"];
+            this.minimumTotalPrice = _data["minimumTotalPrice"];
         }
     }
 
@@ -1432,6 +1545,7 @@ export class UpdateFormCommand implements IUpdateFormCommand {
         data["formType"] = this.formType;
         data["deliveryPrice"] = this.deliveryPrice;
         data["placeOnList"] = this.placeOnList;
+        data["minimumTotalPrice"] = this.minimumTotalPrice;
         return data;
     }
 }
@@ -1449,6 +1563,7 @@ export interface IUpdateFormCommand {
     formType: FormTypeEnum;
     deliveryPrice?: number | undefined;
     placeOnList: number;
+    minimumTotalPrice?: number | undefined;
 }
 
 export class FormAm implements IFormAm {
@@ -1464,6 +1579,7 @@ export class FormAm implements IFormAm {
     formType!: FormTypeEnum;
     deliveryPrice!: number;
     placeOnList!: number;
+    minimumTotalPrice?: number | undefined;
 
     constructor(data?: IFormAm) {
         if (data) {
@@ -1504,6 +1620,7 @@ export class FormAm implements IFormAm {
             this.formType = _data["formType"];
             this.deliveryPrice = _data["deliveryPrice"];
             this.placeOnList = _data["placeOnList"];
+            this.minimumTotalPrice = _data["minimumTotalPrice"];
         }
     }
 
@@ -1544,6 +1661,7 @@ export class FormAm implements IFormAm {
         data["formType"] = this.formType;
         data["deliveryPrice"] = this.deliveryPrice;
         data["placeOnList"] = this.placeOnList;
+        data["minimumTotalPrice"] = this.minimumTotalPrice;
         return data;
     }
 }
@@ -1561,6 +1679,7 @@ export interface IFormAm {
     formType: FormTypeEnum;
     deliveryPrice: number;
     placeOnList: number;
+    minimumTotalPrice?: number | undefined;
 }
 
 export class FormPosition implements IFormPosition {
@@ -1753,6 +1872,134 @@ export enum PositionCategoryEnum {
 export enum PaymentMethodEnum {
     OnPlace = 1,
     Przelewy24 = 2,
+}
+
+export class FormAmForClient implements IFormAmForClient {
+    id!: string;
+    name?: string | undefined;
+    description?: string | undefined;
+    positions?: FormPosition[] | undefined;
+    positionsGrouped?: FormPosition[][] | undefined;
+    availableDates?: AvailableDate[] | undefined;
+    paymentMethods?: PaymentMethodEnum[] | undefined;
+    availableLocations?: Location[] | undefined;
+    formActive?: AvailableDate | undefined;
+    isActive!: boolean;
+    formType!: FormTypeEnum;
+    deliveryPrice!: number;
+    placeOnList!: number;
+    minimumTotalPrice?: number | undefined;
+
+    constructor(data?: IFormAmForClient) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.description = _data["description"];
+            if (Array.isArray(_data["positions"])) {
+                this.positions = [] as any;
+                for (let item of _data["positions"])
+                    this.positions!.push(FormPosition.fromJS(item));
+            }
+            if (Array.isArray(_data["positionsGrouped"])) {
+                this.positionsGrouped = [] as any;
+                for (let item of _data["positionsGrouped"])
+                    this.positionsGrouped!.push(item);
+            }
+            if (Array.isArray(_data["availableDates"])) {
+                this.availableDates = [] as any;
+                for (let item of _data["availableDates"])
+                    this.availableDates!.push(AvailableDate.fromJS(item));
+            }
+            if (Array.isArray(_data["paymentMethods"])) {
+                this.paymentMethods = [] as any;
+                for (let item of _data["paymentMethods"])
+                    this.paymentMethods!.push(item);
+            }
+            if (Array.isArray(_data["availableLocations"])) {
+                this.availableLocations = [] as any;
+                for (let item of _data["availableLocations"])
+                    this.availableLocations!.push(Location.fromJS(item));
+            }
+            this.formActive = _data["formActive"] ? AvailableDate.fromJS(_data["formActive"]) : <any>undefined;
+            this.isActive = _data["isActive"];
+            this.formType = _data["formType"];
+            this.deliveryPrice = _data["deliveryPrice"];
+            this.placeOnList = _data["placeOnList"];
+            this.minimumTotalPrice = _data["minimumTotalPrice"];
+        }
+    }
+
+    static fromJS(data: any): FormAmForClient {
+        data = typeof data === 'object' ? data : {};
+        let result = new FormAmForClient();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["description"] = this.description;
+        if (Array.isArray(this.positions)) {
+            data["positions"] = [];
+            for (let item of this.positions)
+                data["positions"].push(item.toJSON());
+        }
+        if (Array.isArray(this.positionsGrouped)) {
+            data["positionsGrouped"] = [];
+            for (let item of this.positionsGrouped)
+                data["positionsGrouped"].push(item);
+        }
+        if (Array.isArray(this.availableDates)) {
+            data["availableDates"] = [];
+            for (let item of this.availableDates)
+                data["availableDates"].push(item.toJSON());
+        }
+        if (Array.isArray(this.paymentMethods)) {
+            data["paymentMethods"] = [];
+            for (let item of this.paymentMethods)
+                data["paymentMethods"].push(item);
+        }
+        if (Array.isArray(this.availableLocations)) {
+            data["availableLocations"] = [];
+            for (let item of this.availableLocations)
+                data["availableLocations"].push(item.toJSON());
+        }
+        data["formActive"] = this.formActive ? this.formActive.toJSON() : <any>undefined;
+        data["isActive"] = this.isActive;
+        data["formType"] = this.formType;
+        data["deliveryPrice"] = this.deliveryPrice;
+        data["placeOnList"] = this.placeOnList;
+        data["minimumTotalPrice"] = this.minimumTotalPrice;
+        return data;
+    }
+}
+
+export interface IFormAmForClient {
+    id: string;
+    name?: string | undefined;
+    description?: string | undefined;
+    positions?: FormPosition[] | undefined;
+    positionsGrouped?: FormPosition[][] | undefined;
+    availableDates?: AvailableDate[] | undefined;
+    paymentMethods?: PaymentMethodEnum[] | undefined;
+    availableLocations?: Location[] | undefined;
+    formActive?: AvailableDate | undefined;
+    isActive: boolean;
+    formType: FormTypeEnum;
+    deliveryPrice: number;
+    placeOnList: number;
+    minimumTotalPrice?: number | undefined;
 }
 
 export class OrderListAm implements IOrderListAm {
@@ -1984,6 +2231,7 @@ export interface ICreateOrderCommand {
 }
 
 export class OrderPosition implements IOrderPosition {
+    positionId?: string | undefined;
     name?: string | undefined;
     price!: number;
     vat!: number;
@@ -2001,6 +2249,7 @@ export class OrderPosition implements IOrderPosition {
 
     init(_data?: any) {
         if (_data) {
+            this.positionId = _data["positionId"];
             this.name = _data["name"];
             this.price = _data["price"];
             this.vat = _data["vat"];
@@ -2018,6 +2267,7 @@ export class OrderPosition implements IOrderPosition {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["positionId"] = this.positionId;
         data["name"] = this.name;
         data["price"] = this.price;
         data["vat"] = this.vat;
@@ -2028,6 +2278,7 @@ export class OrderPosition implements IOrderPosition {
 }
 
 export interface IOrderPosition {
+    positionId?: string | undefined;
     name?: string | undefined;
     price: number;
     vat: number;

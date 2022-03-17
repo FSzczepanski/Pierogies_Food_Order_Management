@@ -19,5 +19,7 @@
         public FormTypeEnum FormType { get; set; }
         public decimal? DeliveryPrice { get; set; } = 0;
         public int PlaceOnList { get; set; }
+
+        public decimal? MinimumTotalPrice { get; set; } = 0;
     }
 }

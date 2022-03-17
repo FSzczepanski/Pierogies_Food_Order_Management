@@ -10,8 +10,6 @@
     using Domain.Enums;
     using Domain.ValueObjects;
     using MediatR;
-    using Microsoft.EntityFrameworkCore;
-    using Positions.Queries.GetPositionsList;
 
     public class CreateFormCommand : IRequest<Guid>
     {
@@ -26,6 +24,9 @@
         public FormTypeEnum FormType { get; set; }
         public decimal? DeliveryPrice { get; set; }
         public int PlaceOnList { get; set; }
+        
+        public decimal? MinimumTotalPrice { get; set; }
+        
 
         public class Handler : IRequestHandler<CreateFormCommand, Guid>
         {
@@ -78,7 +79,8 @@
                     IsActive = request.IsActive,
                     FormType = request.FormType,
                     DeliveryPrice = request.DeliveryPrice,
-                    PlaceOnList = request.PlaceOnList
+                    PlaceOnList = request.PlaceOnList,
+                    MinimumTotalPrice = request.MinimumTotalPrice
                 };
                 
                 await _applicationDbContext.Forms.AddAsync(entity, cancellationToken);

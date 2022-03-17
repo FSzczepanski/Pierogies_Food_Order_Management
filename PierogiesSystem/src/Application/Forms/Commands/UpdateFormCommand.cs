@@ -28,6 +28,8 @@
         public FormTypeEnum FormType { get; set; }
         public decimal? DeliveryPrice { get; set; }
         public int PlaceOnList { get; set; }
+        
+        public decimal? MinimumTotalPrice { get; set; }
 
         public class Handler : IRequestHandler<UpdateFormCommand, Guid>
         {
@@ -90,6 +92,7 @@
                 entity.FormType = request.FormType;
                 entity.DeliveryPrice = request.DeliveryPrice;
                 entity.PlaceOnList = request.PlaceOnList;
+                entity.MinimumTotalPrice = request.MinimumTotalPrice;
                 
                 
                 await _applicationDbContext.SaveChangesAsync(cancellationToken);

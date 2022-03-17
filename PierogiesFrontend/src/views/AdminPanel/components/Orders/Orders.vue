@@ -114,7 +114,7 @@ export default defineComponent({
     const formsList = reactive({ items: [] as Array<IFormDetailListAm> });
     const formsClient = new FormsClient(process.env.VUE_APP_API_BASE_PATH);
     formsClient
-      .getForms()
+      .getForms(false)
       .then((response) => {
         formsList.items = response.items as Array<IFormDetailListAm>;
       })

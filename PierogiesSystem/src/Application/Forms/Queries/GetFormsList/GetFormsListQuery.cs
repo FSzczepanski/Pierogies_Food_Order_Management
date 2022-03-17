@@ -33,7 +33,7 @@ namespace CleanArchitecture.Application.Forms.Queries.GetFormsList
 
                 if (request.JustActive)
                 {
-                    items = items.Where(f => f.IsActive && f.FormActive.From < DateTime.Now && f.FormActive.To > DateTime.Now).ToList();
+                    items = items.Where(f => f.FormActive != null && f.FormActive.From < DateTime.Now && f.FormActive.To > DateTime.Now).ToList();
                 }
                 
                 return new FormListAm {Items = items};

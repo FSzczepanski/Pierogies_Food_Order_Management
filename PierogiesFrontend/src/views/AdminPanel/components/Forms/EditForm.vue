@@ -25,6 +25,10 @@
               />
             </div>
             <div class="mt-4">
+              <label class="form-label required"> Minimalna wartość zamówienia </label>
+              <el-input v-model="editModel.minimumTotalPrice" disabled />
+            </div>
+            <div class="mt-4">
               <label class="form-label required"> Koszt dostawy </label>
               <el-input v-model="editModel.deliveryPrice" disabled />
             </div>
@@ -271,6 +275,7 @@ export default defineComponent({
       name: "",
       description: "",
       deliveryPrice: 0,
+      minimumTotalPrice: 0,
       formActive: {} as AvailableDate,
       formType: FormTypeEnum.ForHere,
       availableDates: [] as Array<AvailableDate>,
@@ -293,7 +298,8 @@ export default defineComponent({
           editModel.value.availableDates = response.availableDates;
           editModel.value.paymentMethods = response.paymentMethods;
           editModel.value.availableLocations = response.availableLocations;
-
+          editModel.value.minimumTotalPrice = response.minimumTotalPrice;
+          
           response.positions?.forEach((value) => {
             selectedPositions.items.push({
               id: value.positionId,

@@ -1,9 +1,9 @@
 ﻿export enum PositionCategoryEnumTranslation {
   "Brak" = 0,
   "Promocja" = 1,
-  "Przystawka" = 2,
-  "Zupa" = 3,
-  "Danie Główne" = 4,
+  "Przystawki" = 2,
+  "Zupy" = 3,
+  "Dania Główne" = 4,
   "Wegetariańskie" = 5,
   "Napoje" = 6,
   "Nasze wyroby" = 7,

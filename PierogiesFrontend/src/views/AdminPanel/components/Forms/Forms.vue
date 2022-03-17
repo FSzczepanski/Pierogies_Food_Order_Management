@@ -35,7 +35,11 @@
             {{ item.placeOnList }}
           </div>
           <div class="col-md-2">
-            <el-checkbox v-model="item.isActive" :value="item.isActive" />
+            <el-checkbox
+              v-model="item.isActive"
+              :value="item.isActive"
+              @change="disableOrEnableForm(item.id)"
+            />
           </div>
           <div class="col-md-2">
             <button
@@ -49,11 +53,12 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, onMounted, reactive, ref } from "vue";
 import { FormsClient, IFormDetailListAm } from "@/core/api/pierogiesApi";
 import PanelPath from "@/components/PanelPath.vue";
 import { useRouter } from "vue-router";
 import { FormTypeEnumTranslation } from "@/helpers/enums";
+import { showToast } from "@/helpers/confirmationsAdapter";
 
 export default defineComponent({
   name: "Forms",
@@ -66,14 +71,17 @@ export default defineComponent({
 
     const formsList = reactive({ items: [] as Array<IFormDetailListAm> });
     const client = new FormsClient(process.env.VUE_APP_API_BASE_PATH);
-    client
-      .getForms(false)
-      .then((response) => {
-        formsList.items = response.items as Array<IFormDetailListAm>;
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+
+    const getForms = () => {
+      client
+        .getForms(false)
+        .then((response) => {
+          formsList.items = response.items as Array<IFormDetailListAm>;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
 
     const goToUpdateFormView = (id: string) => {
       router.push({
@@ -82,11 +90,27 @@ export default defineComponent({
       });
     };
 
+    const disableOrEnableForm = (id: string) => {
+      client
+        .disableOrEnableForm(id)
+        .then(() => {
+          getForms();
+        })
+        .catch((err) => {
+          showToast("Wystąpił błąd podczas zmiany stanu formularza, " + err);
+        });
+    };
+
+    onMounted(() => {
+      getForms();
+    });
+
     return {
       formsList,
       panelPath,
       goToUpdateFormView,
       FormTypeEnumTranslation,
+      disableOrEnableForm,
     };
   },
 });

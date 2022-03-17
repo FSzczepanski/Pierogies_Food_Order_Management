@@ -1,4 +1,6 @@
-﻿namespace CleanArchitecture.WebUI.Controllers
+﻿using CleanArchitecture.Application.Forms.Queries.GetFormForClient;
+
+namespace CleanArchitecture.WebUI.Controllers
 {
     using System;
     using System.Threading.Tasks;
@@ -37,6 +39,22 @@
         {
             FormAm model = await Mediator.Send(new GetFormQuery() { Id = id });
             return Ok(model);
+        }
+        
+        [HttpGet]
+        [Route("forClient/{id:guid}")]
+        public async Task<ActionResult<FormAmForClient>> GetForClient(Guid id)
+        {
+            FormAmForClient model = await Mediator.Send(new GetFormForClientQuery() { Id = id });
+            return Ok(model);
+        }
+
+        [HttpPut]
+        [Route("modifyState/{id:guid}")]
+        public async Task<ActionResult<Guid>> DisableOrEnableForm(Guid id)
+        {
+            var response = await Mediator.Send(new DisableOrEnableFormCommand{Id = id});
+            return Ok(response);
         }
         
     }

@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using CleanArchitecture.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace CleanArchitecture.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220315214917_MinimumPriceMigration")]
+    partial class MinimumPriceMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -509,9 +511,6 @@ namespace CleanArchitecture.Infrastructure.Persistence.Migrations
 
                             b1.Property<string>("PortionSize")
                                 .HasColumnType("text");
-
-                            b1.Property<Guid?>("PositionId")
-                                .HasColumnType("uuid");
 
                             b1.Property<decimal>("Price")
                                 .HasColumnType("numeric");

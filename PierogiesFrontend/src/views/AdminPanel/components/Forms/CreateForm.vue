@@ -31,13 +31,23 @@
               />
             </div>
             <div class="mt-4">
-              <label class="form-label required"> Koszt dostawy </label>
+              <label class="form-label required"> Minimalna wartość zamówienia </label>
               <el-input
-                v-model="createModel.deliveryPrice"
+                v-model="createModel.minimumTotalPrice"
                 type="number"
                 min="0"
-                max="1000"
-                placeholder="Wprowadź cenę dostawy"
+                max="10000"
+                placeholder="Wprowadź minimalną kwote zamówienia"
+              />
+            </div>
+            <div class="mt-4">
+              <label class="form-label required"> Koszt dostawy </label>
+              <el-input
+                  v-model="createModel.deliveryPrice"
+                  type="number"
+                  min="0"
+                  max="1000"
+                  placeholder="Wprowadź cenę dostawy"
               />
             </div>
             <div class="mt-4 mb-5">
@@ -306,8 +316,8 @@ export default defineComponent({
       name: "",
       description: "",
       deliveryPrice: 0,
+      minimumTotalPrice: 0,
       formActive: {} as AvailableDate,
-
       formType: FormTypeEnum.Event,
       availableDates: [] as Array<AvailableDate>,
       paymentMethods: [] as Array<number>,

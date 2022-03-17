@@ -13,7 +13,7 @@
         :key="index"
         class="mb-5 mt-5"
       >
-        <div class="homeFormItem m-4 list-group-item">
+        <div class="homeFormItem m-4 list-group-item enablePointer">
           <div>
             <img class="homeFormImage" src="icon.png" alt="zdjecie" />
           </div>
@@ -32,95 +32,116 @@
       </div>
       <div
         class="col-lg-10 m-auto"
-        v-for="(item, index) in positionsList.items"
-        :key="index"
+        v-for="(positions, groupIndex) in positionsList.items"
+        :key="groupIndex"
       >
-        <div class="row positionItem" @click="showPositionModal(item)">
-          <hr class="bg-light" />
-          <div class="col text-start ms-5 mt-3">
-            <div class="textThird fs-5 fw-bold">
-              {{ item.name }}
+        <div class="h1 m-5 d-flex justify-content-between">
+          {{ PositionCategoryEnumTranslation[positions[0].positionCategory] }}
+        </div>
+        <div v-for="(item, index) in positions" :key="index">
+          <div class="row positionItem" @click="showPositionModal(item)">
+            <div class="col text-start ms-5 mt-3">
+              <div class="textThird fs-5 fw-bold">
+                {{ item.name }}
+              </div>
+              <div class="mt-2" style="font-size: 13px">
+                {{ item.description }}
+              </div>
+              <div class="fs-4 text-info mt-3">{{ item.price }} zł</div>
             </div>
-            <div class="mt-2" style="font-size: 13px">
-              {{ item.description }}
+            <div class="col">
+              <img
+                v-if="item.hasPhoto"
+                class="positionImage m-3"
+                :src="loadPositionPhoto(item.positionId)"
+                alt="Zdjecie"
+              />
             </div>
-            <div class="fs-4 text-info mt-3">{{ item.price }} zł</div>
           </div>
-          <div class="col">
-            <img
-              v-if="item.hasPhoto"
-              class="positionImage m-3"
-              :src="loadPositionPhoto(item.positionId)"
-              alt="Zdjecie"
-            />
-          </div>
+          <hr class="bg-light mt-3" />
         </div>
       </div>
     </div>
   </div>
-  <div class="fixed-bottom">
+  <div class="fixed-bottom disable-select">
     <transition name="fade">
-      <div v-if="price > 0" class="row colorThird cart justify-content-center">
-        <div v-if="orderVisible" class="row justify-content-center mt-2">
-          <div class="col-lg-2">
-            <p class="btn btn-primary" @click="orderVisible = false">Powrót</p>
-          </div>
-          <div class="col-lg-2">
-            <p
-              class="btn btn-primary"
-              v-if="orderVisible"
-              @click="confirmOrder"
+      <div v-if="price > 0 && !orderVisible" class="row colorThird cart">
+        <div
+          class="row justify-content-center mt-2 ms-5 enablePointer"
+          @click="orderVisible = true"
+        >
+          <div class="col-lg-5 ms-5 h3">
+            <div
+              class="ms-5 float-start rounded-circle text-info bg-light text-center p-1"
+              style="width: 5vh; height: 5vh"
             >
-              Zamawiam
-            </p>
+              {{ orderedPositions.items.length }}
+            </div>
+            <div class="p-1 float-start ms-5">Zobacz zamówienie</div>
+            <div class="mt-2 h4">{{ price }} zł</div>
           </div>
-        </div>
-        <div v-else class="row justify-content-center mt-2 ms-5">
-          <div class="col-lg-2 ms-5">
-            <p class="btn btn-primary" @click="orderVisible = true">
-              Zobacz zamówienie
-            </p>
-          </div>
-          <div class="col-lg-2 mt-2 h4">{{ price }} zł</div>
         </div>
       </div>
     </transition>
     <transition name="fade">
-      <div v-if="orderVisible" class="cartPositions">
-        <div class="textSecond row orderRow m-auto fw-bold">
-          <div class="col">Nazwa</div>
-          <div class="col">porcja</div>
-          <div class="col">ilość</div>
-          <div class="col">usuń</div>
-        </div>
+      <div v-if="orderVisible">
         <div
-          v-for="(item, index) in orderedPositions.items"
-          :key="index"
-          class="textSecond"
+          class="row colorThird cart enablePointer"
+          @click="orderVisible = false"
         >
-          <hr />
-          <div class="row orderRow m-auto">
-            <div class="col">
-              {{ item.name }}
-            </div>
-            <div class="col">
-              {{ item.portionSize }}
-            </div>
-            <div class="col">
-              <el-input
-                min="0"
-                max="100"
-                type="number"
-                v-model="item.amount"
-                step="1"
-              />
-            </div>
-            <div class="col">
-              <p class="btn text-danger h3 btn-danger">
-                <i class="bi bi-x text-white" @click="deletePosition(item)"></i>
-              </p>
+          <div class="justify-content-end d-flex text-white">
+            <i class="bi h1 bi-chevron-down me-5" />
+          </div>
+        </div>
+        <div class="cartPositions">
+          <div class="textSecond row orderRow m-auto fw-bold">
+            <div class="col">Nazwa</div>
+            <div class="col">porcja</div>
+            <div class="col">ilość</div>
+            <div class="col">usuń</div>
+          </div>
+          <div
+            v-for="(item, index) in orderedPositions.items"
+            :key="index"
+            class="textSecond fs-2 mt-3"
+          >
+            <div class="row orderRow m-auto">
+              <div class="col">
+                {{ item.name }}
+              </div>
+              <div class="col">
+                {{ item.portionSize }}
+              </div>
+              <div class="col">
+                <el-input
+                  min="1"
+                  max="100"
+                  type="number"
+                  class="col-lg-3"
+                  v-model="item.amount"
+                  step="1"
+                />
+              </div>
+              <div class="col">
+                <p
+                  class="btn btn-danger"
+                  @click="deletePosition(item.positionId)"
+                >
+                  <i class="bi bi-x text-white"></i>
+                </p>
+              </div>
             </div>
           </div>
+        </div>
+        <div class="bg-light pt-3">
+          <p
+            class="m-auto mb-3 btn btn-primary col-lg-8"
+            v-if="orderVisible"
+            @click="confirmOrder"
+          >
+            Podsumowanie
+            <i class="bi bi-cart-check h4"></i>
+          </p>
         </div>
       </div>
     </transition>
@@ -128,7 +149,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref } from "vue";
+import { defineComponent, reactive, ref, watch } from "vue";
 import {
   FormsClient,
   FormTypeEnum,
@@ -140,6 +161,8 @@ import {
 import PositionDetailsModal from "@/views/Home/PositionDetailsModal.vue";
 import { useRouter } from "vue-router";
 import { PositionPhoto } from "@/helpers/inferfaces";
+import { PositionCategoryEnumTranslation } from "@/helpers/enums";
+import {showToast} from "@/helpers/confirmationsAdapter";
 
 export default defineComponent({
   name: "HomeForms",
@@ -159,6 +182,7 @@ export default defineComponent({
       formType: FormTypeEnum.ForHere,
       isActive: true,
       id: "",
+      minimumTotalPrice: 0,
       deliveryPrice: 0,
       description: "",
       placeOnList: 0,
@@ -168,7 +192,9 @@ export default defineComponent({
       positions: undefined,
     });
 
-    const positionsList = reactive({ items: [] as Array<IFormPosition> });
+    const positionsList = reactive({
+      items: [] as Array<Array<IFormPosition>>,
+    });
     const positionPhotos = ref<Array<PositionPhoto>>([]);
     const orderedPositions = reactive({ items: [] as Array<IOrderPosition> });
     const selectedPosition = ref<IOrderPosition>({
@@ -186,18 +212,22 @@ export default defineComponent({
     });
 
     const loadFormData = (id: string) => {
-      client.get(id).then((response) => {
-        positionsList.items = response.positions as Array<IFormPosition>;
+      client.getForClient(id).then((response) => {
+        positionsList.items = response.positionsGrouped as Array<
+          Array<IFormPosition>
+        >;
         selectedForm.value = response as IFormAm;
-
-        positionsList.items.forEach((p) => {
-          if (p.hasPhoto) {
-            const url = process.env.VUE_APP_API_BASE_PATH;
-            positionPhotos.value.push({
-              positionId: p.positionId,
-              photoUrl: url + "/api/v1/core/positions/photo/" + p.positionId,
-            });
-          }
+        orderedPositions.items.splice(0, orderedPositions.items.length);
+        positionsList.items.forEach((pGroup) => {
+          pGroup.forEach((p) => {
+            if (p.hasPhoto) {
+              const url = process.env.VUE_APP_API_BASE_PATH;
+              positionPhotos.value.push({
+                positionId: p.positionId,
+                photoUrl: url + "/api/v1/core/positions/photo/" + p.positionId,
+              });
+            }
+          });
         });
       });
     };
@@ -208,18 +238,26 @@ export default defineComponent({
     };
 
     const addPositionToOrder = (amountVal: number) => {
-      orderedPositions.items.push({
-        name: selectedPosition.value.name,
-        amount: amountVal,
-        vat: selectedPosition.value.vat,
-        portionSize: selectedPosition.value.portionSize,
-        price: selectedPosition.value.price,
-      });
+      const positionAdded = orderedPositions.items.find(
+        (item) => item.positionId === selectedPosition.value.positionId
+      );
 
-      price.value += selectedPosition.value.price * amountVal;
+      positionAdded != undefined
+        ? (positionAdded.amount = positionAdded.amount - 0 + (amountVal - 0))
+        : orderedPositions.items.push({
+            positionId: selectedPosition.value.positionId,
+            name: selectedPosition.value.name,
+            amount: amountVal,
+            vat: selectedPosition.value.vat,
+            portionSize: selectedPosition.value.portionSize,
+            price: selectedPosition.value.price,
+          });
     };
 
     const confirmOrder = () => {
+      const minPrice = selectedForm.value.minimumTotalPrice!;
+      (price.value < minPrice) ? 
+          showToast("Minimalna wartość zamówienia to " + minPrice + " zł") :
       router.push({
         name: "ConfirmOrder",
         params: {
@@ -238,9 +276,17 @@ export default defineComponent({
         ?.photoUrl;
     };
 
-    const deletePosition = (item: any) => {
-      console.log(item);
-      orderedPositions.items.filter((p) => p.price == item.price);
+    watch(orderedPositions.items, (o) => {
+      let newPrice = 0;
+      o.forEach((pos) => (newPrice += pos.price * pos.amount));
+      price.value = newPrice;
+    });
+
+    const deletePosition = (id: string) => {
+      const removeIndex = orderedPositions.items.findIndex(
+        (item) => item.positionId === id
+      );
+      orderedPositions.items.splice(removeIndex, 1);
     };
 
     return {
@@ -259,31 +305,18 @@ export default defineComponent({
       selectedForm,
       deletePosition,
       loadPositionPhoto,
+      PositionCategoryEnumTranslation,
     };
   },
 });
 </script>
 
 <style scoped>
-.fade-enter-active,
-.fade-leave-active {
+.fade-enter-active {
   transition: all 0.5s ease;
 }
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: translateX(40px);
-}
-
-.cart-enter-active,
-.cart-leave-active {
-  transition: all 0.5s ease;
-}
-
-.cart-enter-from,
-.cart-leave-to {
-  opacity: 0;
-  transform: translateY(100vh);
+.fade-enter-from {
+  opacity: 1;
+  transform: translateY(170px);
 }
 </style>
