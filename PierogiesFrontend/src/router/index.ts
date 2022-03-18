@@ -88,10 +88,11 @@ const routes: Array<RouteRecordRaw> = [
           import("../views/AdminPanel/components/Orders/Orders.vue"),
       },
       {
-        path: "SummarizedOrders",
-        name: "SummarizedOrders",
+        path: "orders/details/:orderId",
+        name: "OrderDetails",
         component: () =>
-          import("../views/AdminPanel/components/Orders/OrdersSummary.vue"),
+          import("../views/AdminPanel/components/Orders/OrderDetails.vue"),
+        props: { orderId: true },
       },
       {
         path: "positions",

@@ -452,6 +452,57 @@ export class OrderClient {
         return Promise.resolve<string>(null as any);
     }
 
+    get(id: string , cancelToken?: CancelToken | undefined): Promise<OrderAm> {
+        let url_ = this.baseUrl + "/api/Order/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGet(_response);
+        });
+    }
+
+    protected processGet(response: AxiosResponse): Promise<OrderAm> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OrderAm.fromJS(resultData200);
+            return Promise.resolve<OrderAm>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OrderAm>(null as any);
+    }
+
     update(command: UpdateOrderCommand, id: string , cancelToken?: CancelToken | undefined): Promise<string> {
         let url_ = this.baseUrl + "/api/Order/{id}";
         if (id === undefined || id === null)
@@ -2122,6 +2173,166 @@ export interface IOrderDetailsListAm {
     description?: string | undefined;
 }
 
+export class OrderAm implements IOrderAm {
+    id!: string;
+    name?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    positions?: OrderPosition[] | undefined;
+    created!: Date;
+    date!: Date;
+    locationString?: string | undefined;
+    paymentMethod?: PaymentMethodEnum | undefined;
+    paymentDate?: Date | undefined;
+    isPaid?: boolean | undefined;
+    needInvoice?: boolean | undefined;
+    formId!: string;
+    deliveryPrice!: number;
+    fullPrice!: number;
+    description?: string | undefined;
+
+    constructor(data?: IOrderAm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.email = _data["email"];
+            this.phone = _data["phone"];
+            if (Array.isArray(_data["positions"])) {
+                this.positions = [] as any;
+                for (let item of _data["positions"])
+                    this.positions!.push(OrderPosition.fromJS(item));
+            }
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.locationString = _data["locationString"];
+            this.paymentMethod = _data["paymentMethod"];
+            this.paymentDate = _data["paymentDate"] ? new Date(_data["paymentDate"].toString()) : <any>undefined;
+            this.isPaid = _data["isPaid"];
+            this.needInvoice = _data["needInvoice"];
+            this.formId = _data["formId"];
+            this.deliveryPrice = _data["deliveryPrice"];
+            this.fullPrice = _data["fullPrice"];
+            this.description = _data["description"];
+        }
+    }
+
+    static fromJS(data: any): OrderAm {
+        data = typeof data === 'object' ? data : {};
+        let result = new OrderAm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["email"] = this.email;
+        data["phone"] = this.phone;
+        if (Array.isArray(this.positions)) {
+            data["positions"] = [];
+            for (let item of this.positions)
+                data["positions"].push(item.toJSON());
+        }
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["locationString"] = this.locationString;
+        data["paymentMethod"] = this.paymentMethod;
+        data["paymentDate"] = this.paymentDate ? this.paymentDate.toISOString() : <any>undefined;
+        data["isPaid"] = this.isPaid;
+        data["needInvoice"] = this.needInvoice;
+        data["formId"] = this.formId;
+        data["deliveryPrice"] = this.deliveryPrice;
+        data["fullPrice"] = this.fullPrice;
+        data["description"] = this.description;
+        return data;
+    }
+}
+
+export interface IOrderAm {
+    id: string;
+    name?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    positions?: OrderPosition[] | undefined;
+    created: Date;
+    date: Date;
+    locationString?: string | undefined;
+    paymentMethod?: PaymentMethodEnum | undefined;
+    paymentDate?: Date | undefined;
+    isPaid?: boolean | undefined;
+    needInvoice?: boolean | undefined;
+    formId: string;
+    deliveryPrice: number;
+    fullPrice: number;
+    description?: string | undefined;
+}
+
+export class OrderPosition implements IOrderPosition {
+    positionId?: string | undefined;
+    name?: string | undefined;
+    price!: number;
+    vat!: number;
+    amount!: number;
+    portionSize?: string | undefined;
+
+    constructor(data?: IOrderPosition) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.positionId = _data["positionId"];
+            this.name = _data["name"];
+            this.price = _data["price"];
+            this.vat = _data["vat"];
+            this.amount = _data["amount"];
+            this.portionSize = _data["portionSize"];
+        }
+    }
+
+    static fromJS(data: any): OrderPosition {
+        data = typeof data === 'object' ? data : {};
+        let result = new OrderPosition();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["positionId"] = this.positionId;
+        data["name"] = this.name;
+        data["price"] = this.price;
+        data["vat"] = this.vat;
+        data["amount"] = this.amount;
+        data["portionSize"] = this.portionSize;
+        return data;
+    }
+}
+
+export interface IOrderPosition {
+    positionId?: string | undefined;
+    name?: string | undefined;
+    price: number;
+    vat: number;
+    amount: number;
+    portionSize?: string | undefined;
+}
+
 export class CreateOrderCommand implements ICreateOrderCommand {
     purchaserName?: string | undefined;
     email?: string | undefined;
@@ -2228,62 +2439,6 @@ export interface ICreateOrderCommand {
     formId: string;
     deliveryPrice: number;
     description?: string | undefined;
-}
-
-export class OrderPosition implements IOrderPosition {
-    positionId?: string | undefined;
-    name?: string | undefined;
-    price!: number;
-    vat!: number;
-    amount!: number;
-    portionSize?: string | undefined;
-
-    constructor(data?: IOrderPosition) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.positionId = _data["positionId"];
-            this.name = _data["name"];
-            this.price = _data["price"];
-            this.vat = _data["vat"];
-            this.amount = _data["amount"];
-            this.portionSize = _data["portionSize"];
-        }
-    }
-
-    static fromJS(data: any): OrderPosition {
-        data = typeof data === 'object' ? data : {};
-        let result = new OrderPosition();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["positionId"] = this.positionId;
-        data["name"] = this.name;
-        data["price"] = this.price;
-        data["vat"] = this.vat;
-        data["amount"] = this.amount;
-        data["portionSize"] = this.portionSize;
-        return data;
-    }
-}
-
-export interface IOrderPosition {
-    positionId?: string | undefined;
-    name?: string | undefined;
-    price: number;
-    vat: number;
-    amount: number;
-    portionSize?: string | undefined;
 }
 
 export class UpdateOrderCommand implements IUpdateOrderCommand {

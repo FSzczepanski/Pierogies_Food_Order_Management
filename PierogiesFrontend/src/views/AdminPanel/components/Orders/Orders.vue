@@ -24,7 +24,8 @@
         <div class="col-md-1">#</div>
         <div class="col">Formularz</div>
         <div class="col">Klient</div>
-        <div class="col">Data</div>
+        <div class="col">Adres odbioru</div>
+        <div class="col">Data odbioru</div>
         <div class="col-md-1">Kwota</div>
         <div class="col-md-1">Płatność</div>
         <div class="col">Akcje</div>
@@ -46,6 +47,9 @@
             {{ item.purchaserName }}
           </div>
           <div class="col">
+            {{ item.locationString }}
+          </div>
+          <div class="col">
             {{ new Date(item.date).toLocaleString() }}
           </div>
           <div class="col-md-1">{{ item.fullPrice }} zł</div>
@@ -54,6 +58,10 @@
           </div>
           <div class="col">
             <button class="btn btn-primary ms-4 bi bi-pencil-square"></button>
+            <button
+              class="btn btn-primary ms-4 bi-card-checklist"
+              @click="showOrderDetails(item.id)"
+            ></button>
           </div>
         </div>
       </div>
@@ -69,12 +77,15 @@ import {
   OrderClient,
 } from "@/core/api/pierogiesApi";
 import PanelPath from "@/components/PanelPath.vue";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "Orders",
   components: { PanelPath },
   props: {},
   setup: function (props, { emit }) {
+    const router = useRouter();
+
     const panelPath = ref<Array<any>>([
       { label: "Zamówienia", path: "/board/orders" },
     ]);
@@ -122,11 +133,19 @@ export default defineComponent({
         console.log(err);
       });
 
+    const showOrderDetails = (id: string) => {
+      router.push({
+        name: "OrderDetails",
+        params: { orderId: id },
+      });
+    };
+
     return {
       panelPath,
       searchModel,
       ordersSearched,
       formsList,
+      showOrderDetails,
     };
   },
 });

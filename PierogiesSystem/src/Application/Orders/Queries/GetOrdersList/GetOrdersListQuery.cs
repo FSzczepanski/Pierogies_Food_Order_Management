@@ -1,4 +1,6 @@
-﻿namespace CleanArchitecture.Application.Orders.Queries.GetOrdersList
+﻿using System.Linq;
+
+namespace CleanArchitecture.Application.Orders.Queries.GetOrdersList
 {
     using System;
     using System.Collections.Generic;
@@ -39,6 +41,8 @@
                     }
                     
                 }
+
+                items = items.OrderByDescending(order => order.IdentityNumber).ToList();
                 
                 return new OrderListAm {Items = items};
             }

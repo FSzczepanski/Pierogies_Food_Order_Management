@@ -1,4 +1,6 @@
-﻿namespace CleanArchitecture.WebUI.Controllers
+﻿using CleanArchitecture.Application.Orders.Queries.GetOrder;
+
+namespace CleanArchitecture.WebUI.Controllers
 {
     using System;
     using System.Threading.Tasks;
@@ -14,6 +16,13 @@
         {
             var list = await Mediator.Send(new GetOrdersListQuery());
             return Ok(list);
+        }
+        
+        [HttpGet("{id:guid}")]
+        public async Task<ActionResult<OrderAm>> Get(Guid id)
+        {
+            OrderAm model = await Mediator.Send(new GetOrderQuery() { Id = id });
+            return Ok(model);
         }
         
         [HttpPost]

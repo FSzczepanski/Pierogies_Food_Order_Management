@@ -2,6 +2,9 @@
   <position-details-modal
     :show="positionModalVisible"
     :name="selectedPosition.name"
+    :portion-size="selectedPosition.portionSize"
+    :price="selectedPosition.price"
+    :photo-url="selectedPositionPhotoUrl"
     @closeModal="hidePositionModal"
     @ok="addPositionToOrder"
   />
@@ -232,8 +235,12 @@ export default defineComponent({
       });
     };
 
+    
+    const selectedPositionPhotoUrl = ref<string>("");
     const showPositionModal = (position: IFormPosition) => {
       selectedPosition.value = position;
+      const photoUrl = positionPhotos.value.find((photo) => photo.positionId == position.positionId)?.photoUrl;;
+      selectedPositionPhotoUrl.value = photoUrl ?? "";
       positionModalVisible.value = true;
     };
 
@@ -273,7 +280,7 @@ export default defineComponent({
 
     const loadPositionPhoto = (itemId: string) => {
       return positionPhotos.value.find((photo) => photo.positionId == itemId)
-        ?.photoUrl;
+          ?.photoUrl;
     };
 
     watch(orderedPositions.items, (o) => {
@@ -306,6 +313,7 @@ export default defineComponent({
       deletePosition,
       loadPositionPhoto,
       PositionCategoryEnumTranslation,
+      selectedPositionPhotoUrl,
     };
   },
 });

@@ -35,6 +35,8 @@ namespace CleanArchitecture.Application.Forms.Queries.GetFormsList
                 {
                     items = items.Where(f => f.FormActive != null && f.FormActive.From < DateTime.Now && f.FormActive.To > DateTime.Now).ToList();
                 }
+
+                items = items.OrderBy(form => form.IdentityNumber).ToList();
                 
                 return new FormListAm {Items = items};
             }

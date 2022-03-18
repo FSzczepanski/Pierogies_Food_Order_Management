@@ -32,9 +32,4 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="OrderPayment" />
-    <Folder Include="Orders\Queries\GetOrder" />
-  </ItemGroup>
-
 </Project>

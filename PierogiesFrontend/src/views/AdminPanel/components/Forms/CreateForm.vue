@@ -241,7 +241,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref, watch } from "vue";
+import {defineComponent, onMounted, reactive, ref, watch} from "vue";
 import PanelPath from "@/components/PanelPath.vue";
 import {
   AvailableDate,
@@ -303,9 +303,7 @@ export default defineComponent({
           console.log(err);
         });
     };
-
-    getPositions();
-
+    
     //temp values to createModel
     const formActive = ref<any>('');
     const selectedPaymentMethodsPl = ref<Array<string>>([]);
@@ -432,6 +430,10 @@ export default defineComponent({
           console.log(err);
         });
     };
+
+    onMounted(() => {
+      getPositions();
+    });
 
     return {
       createPath,

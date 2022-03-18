@@ -81,16 +81,16 @@ body{
 }
 
 .btn-info {
-    background-color: rgb(196, 193, 193) !important;
+    background-color: rgb(232, 233, 234) !important;
     border-color: #e8e7e8 !important;
-    color: #ffffff !important;
+    color: #b71cdb !important;
     font-weight: bold !important;
     border-radius: 30px !important;
     font-size: 18px !important;
 }
 
 .btn-info:hover {
-    background-color: #b3b3b3 !important;
+    background-color: #b71cdb !important;
     border-color: #e8e7e8 !important;
     color: #e2d3e7 !important;
     font-weight: bolder !important;
@@ -211,6 +211,13 @@ body{
 .positionImage{
     max-height: 20vh;
     max-width: 23vh;
+    border: solid #c6c2c2;
+    border-radius: 15px;
+}
+
+.positionModalImage{
+    max-height: 40vh;
+    max-width: 40vh;
     border: solid #c6c2c2;
     border-radius: 15px;
 }
