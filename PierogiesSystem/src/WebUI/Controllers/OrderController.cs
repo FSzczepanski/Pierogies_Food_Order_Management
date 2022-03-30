@@ -1,4 +1,5 @@
 ﻿using CleanArchitecture.Application.Orders.Queries.GetOrder;
+using CleanArchitecture.Application.Orders.Queries.GetSummarizedOrders.vue;
 
 namespace CleanArchitecture.WebUI.Controllers
 {
@@ -37,6 +38,14 @@ namespace CleanArchitecture.WebUI.Controllers
         {
             var id = await Mediator.Send(command);
             return Ok(id);
+        }
+        
+        [HttpGet]
+        [Route("summary/{formId:guid}")]
+        public async Task<ActionResult<SummarizedOrdersAm>> GetSummarizedOrders(Guid formId)
+        {
+            SummarizedOrdersAm model = await Mediator.Send(new GetSummarizedOrders { FormId = formId });
+            return Ok(model);
         }
     }
 }

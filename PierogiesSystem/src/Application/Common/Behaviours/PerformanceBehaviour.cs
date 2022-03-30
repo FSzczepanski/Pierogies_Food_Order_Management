@@ -38,7 +38,7 @@ namespace CleanArchitecture.Application.Common.Behaviours
             var requestName = typeof(TRequest).Name;
        
             _logger.LogWarning(
-                "Necto Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@Request}",
+                "Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@Request}",
                 requestName, elapsedMilliseconds, request);
 
 

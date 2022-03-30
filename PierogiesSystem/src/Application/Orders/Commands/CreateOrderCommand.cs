@@ -1,4 +1,8 @@
-﻿namespace CleanArchitecture.Application.Orders.Commands
+﻿using System.IO;
+using CleanArchitecture.Application.Mails.models;
+using Microsoft.AspNetCore.Http;
+
+namespace CleanArchitecture.Application.Orders.Commands
 {
     using System;
     using System.Collections.Generic;
@@ -40,13 +44,18 @@
         {
             private readonly IApplicationDbContext _applicationDbContext;
 
-            public Handler(IApplicationDbContext applicationDbContext)
+            private readonly IEmailService _emailService;
+
+            public Handler(IApplicationDbContext applicationDbContext, IEmailService emailService)
             {
                 _applicationDbContext = applicationDbContext;
+                _emailService = emailService;
             }
 
             public async Task<Guid> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
             {
+
+                var fullPrice = CalculateFullPrice(request.Positions, request.DeliveryPrice, request.IsDefault);
                 var entity = new Order()
                 {
                     Purchaser = new Purchaser(){Name = request.PurchaserName, Email = request.Email, Phone = request.Phone},
@@ -58,7 +67,7 @@
                         CountryName = request.CountryName, IsDefault = request.IsDefault, ZipCode = request.ZipCode
                     },
                     Payment = new PaymentDetails(){PaymentMethod = request.PaymentMethod,NeedInvoice = request.NeedInvoice, IsPaid = false},
-                    FullPrice = CalculateFullPrice(request.Positions, request.DeliveryPrice, request.IsDefault),
+                    FullPrice = fullPrice,
                     FormId = request.FormId,
                     DeliveryPrice = request.DeliveryPrice,
                     Description = request.Description
@@ -66,7 +75,49 @@
                 
                 await _applicationDbContext.Orders.AddAsync(entity, cancellationToken);
                 await _applicationDbContext.SaveChangesAsync(cancellationToken);
+
+                var location = request.Street + ", " + request.ZipCode + " " + request.CityName;
+                await SendConfirmationMails(request.Email, request.PurchaserName, location, request.Date, request.Positions, fullPrice, request.DeliveryPrice);
+                
+                
                 return entity.Id;
+            }
+
+            private async Task SendConfirmationMails(string email, string name, string location, 
+                DateTime date, List<OrderPosition> positions, decimal fullPrice, decimal deliveryPrice)
+            {
+                var ordersText = "";
+                foreach (var orderPosition in positions)
+                {
+                    ordersText += "<tr>" +
+                                    "<td style='padding: 15px'>"+orderPosition.Name+"</td>" +
+                                    "<td style='padding: 15px'>"+orderPosition.Price+" zł</td>" +
+                                    "<td style='padding: 15px'>"+orderPosition.PortionSize+"</td>" +
+                                    "<td style='padding: 15px'>"+orderPosition.Amount+"</td>" +
+                                    "</tr> ";
+                }
+                
+                
+                string FilePath = Directory.GetCurrentDirectory() + "\\Templates\\EmailTemplate.html";
+                StreamReader str = new StreamReader(FilePath);
+                string MailBody = str.ReadToEnd();
+                str.Close();
+                MailBody = MailBody
+                    .Replace("{Name}", name)
+                    .Replace("{Location}", location)
+                    .Replace("{Date}", date.ToLocalTime().ToString("dd/MM/yyyy hh:mm"))
+                    .Replace("<tr>{row}</tr>", ordersText)
+                    .Replace("{TotalPrice}", fullPrice + " zł")
+                    .Replace("{Delivery}", deliveryPrice != 0 ? "Dostawa: "+deliveryPrice + " zł" : "");
+
+                
+                var mailRequest = new MailRequest
+                {
+                    ToEmail = email,
+                    Subject = "Potwierdzenie zamówienia, Folwark Tumiany",
+                    Body = MailBody
+                };
+                await _emailService.SendEmailAsync(mailRequest);
             }
 
             private static decimal CalculateFullPrice(List<OrderPosition> orderPositions, decimal deliveryPrice, bool isDefaultLocation)

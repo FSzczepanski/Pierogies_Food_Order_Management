@@ -1,3 +1,6 @@
+using CleanArchitecture.Application.Mails.models;
+using MailKit;
+
 namespace CleanArchitecture.WebUI
 {
     using CleanArchitecture.Application;
@@ -46,6 +49,8 @@ namespace CleanArchitecture.WebUI
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddScoped<IUserService, UserService>();
             services.AddTransient<IPhotoService, PhotoService>();
+            services.AddTransient<IEmailService, EmailService>();
+            
             services.AddHttpContextAccessor();
             
             services.AddControllers()
@@ -72,8 +77,8 @@ namespace CleanArchitecture.WebUI
                 options.SuppressModelStateInvalidFilter = true);
 
             services.AddSwaggerDocumentation();
-            
 
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

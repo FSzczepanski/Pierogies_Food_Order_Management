@@ -15,7 +15,7 @@
           </el-option>
         </el-select>
       </div>
-      <button class="btn btn-primary me-5 float-end">
+      <button class="btn btn-primary me-5 float-end" @click="generateSummarizedOrders">
         Generuj podsumowanie formularza
       </button>
     </div>
@@ -69,7 +69,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, ref, watch } from "vue";
+import {defineComponent, onMounted, reactive, ref, watch} from "vue";
 import {
   FormsClient,
   IFormDetailListAm,
@@ -78,6 +78,7 @@ import {
 } from "@/core/api/pierogiesApi";
 import PanelPath from "@/components/PanelPath.vue";
 import { useRouter } from "vue-router";
+import {showToast} from "@/helpers/confirmationsAdapter";
 
 export default defineComponent({
   name: "Orders",
@@ -120,8 +121,6 @@ export default defineComponent({
         });
     };
 
-    getOrders();
-
     const formsList = reactive({ items: [] as Array<IFormDetailListAm> });
     const formsClient = new FormsClient(process.env.VUE_APP_API_BASE_PATH);
     formsClient
@@ -139,6 +138,22 @@ export default defineComponent({
         params: { orderId: id },
       });
     };
+    
+    const generateSummarizedOrders = () => {
+      if (searchModel.value != ""){
+        router.push({
+          name: "OrderSummary",
+          params: { formId: searchModel.value },
+        });
+      }else{
+        showToast("Aby wygenerować podsumowanie wybierz formularz");
+      };
+      
+    };
+
+    onMounted(() => {
+      getOrders();
+    });
 
     return {
       panelPath,
@@ -146,6 +161,7 @@ export default defineComponent({
       ordersSearched,
       formsList,
       showOrderDetails,
+      generateSummarizedOrders,
     };
   },
 });

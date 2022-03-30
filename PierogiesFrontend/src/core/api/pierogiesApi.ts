@@ -558,6 +558,57 @@ export class OrderClient {
         }
         return Promise.resolve<string>(null as any);
     }
+
+    getSummarizedOrders(formId: string , cancelToken?: CancelToken | undefined): Promise<SummarizedOrdersAm> {
+        let url_ = this.baseUrl + "/api/Order/summary/{formId}";
+        if (formId === undefined || formId === null)
+            throw new Error("The parameter 'formId' must be defined.");
+        url_ = url_.replace("{formId}", encodeURIComponent("" + formId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetSummarizedOrders(_response);
+        });
+    }
+
+    protected processGetSummarizedOrders(response: AxiosResponse): Promise<SummarizedOrdersAm> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = SummarizedOrdersAm.fromJS(resultData200);
+            return Promise.resolve<SummarizedOrdersAm>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<SummarizedOrdersAm>(null as any);
+    }
 }
 
 export class PositionsClient {
@@ -2543,6 +2594,58 @@ export interface IUpdateOrderCommand {
     formId: string;
     deliveryPrice: number;
     description?: string | undefined;
+}
+
+export class SummarizedOrdersAm implements ISummarizedOrdersAm {
+    formId!: string;
+    formName?: string | undefined;
+    positions?: OrderPosition[] | undefined;
+
+    constructor(data?: ISummarizedOrdersAm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.formId = _data["formId"];
+            this.formName = _data["formName"];
+            if (Array.isArray(_data["positions"])) {
+                this.positions = [] as any;
+                for (let item of _data["positions"])
+                    this.positions!.push(OrderPosition.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SummarizedOrdersAm {
+        data = typeof data === 'object' ? data : {};
+        let result = new SummarizedOrdersAm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["formId"] = this.formId;
+        data["formName"] = this.formName;
+        if (Array.isArray(this.positions)) {
+            data["positions"] = [];
+            for (let item of this.positions)
+                data["positions"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export interface ISummarizedOrdersAm {
+    formId: string;
+    formName?: string | undefined;
+    positions?: OrderPosition[] | undefined;
 }
 
 export class PositionListAm implements IPositionListAm {
