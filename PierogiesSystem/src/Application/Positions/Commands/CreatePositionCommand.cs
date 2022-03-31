@@ -5,6 +5,7 @@
     using System.Threading.Tasks;
     using Common.Interfaces;
     using Domain.Entities;
+    using Domain.Enums;
     using MediatR;
 
     public class CreatePositionCommand : IRequest<Guid>
@@ -15,6 +16,7 @@
         public decimal Vat { get; set; }
         public decimal Amount { get; set; }
         public string PortionSize { get; set; }
+        public PositionCategoryEnum PositionCategory { get; set; }
 
         public class Handler : IRequestHandler<CreatePositionCommand, Guid>
         {
@@ -34,7 +36,9 @@
                     Price = request.Price,
                     Vat = request.Vat,
                     Amount = request.Amount,
-                    PortionSize = request.PortionSize
+                    PortionSize = request.PortionSize,
+                    PositionCategory = request.PositionCategory,
+                    HasPhoto = false
                 };
 
                 await _applicationDbContext.Positions.AddAsync(entity, cancellationToken);

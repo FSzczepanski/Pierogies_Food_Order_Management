@@ -1,20 +1,24 @@
-using CleanArchitecture.Application;
-using CleanArchitecture.Application.Common.Interfaces;
-using CleanArchitecture.Infrastructure;
-using CleanArchitecture.Infrastructure.Persistence;
-using CleanArchitecture.WebUI.Filters;
-using FluentValidation.AspNetCore;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using CleanArchitecture.Application.Mails.models;
+using MailKit;
 
 namespace CleanArchitecture.WebUI
 {
+    using CleanArchitecture.Application;
+    using CleanArchitecture.Application.Common.Interfaces;
+    using CleanArchitecture.Infrastructure;
+    using CleanArchitecture.Infrastructure.Persistence;
+    using CleanArchitecture.WebUI.Filters;
+    using FluentValidation.AspNetCore;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
     using Domain.Entities;
     using Extensions;
+    using Helpers;
+    using Infrastructure.Services;
     using Microsoft.OpenApi.Models;
     using Middleware;
 
@@ -44,8 +48,18 @@ namespace CleanArchitecture.WebUI
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddScoped<IUserService, UserService>();
+            services.AddTransient<IPhotoService, PhotoService>();
+            services.AddTransient<IEmailService, EmailService>();
+            
             services.AddHttpContextAccessor();
             
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new StringConverterHelper());
+                    options.JsonSerializerOptions.Converters.Add(new JsonDateTimeToStringConverter());
+                    options.JsonSerializerOptions.Converters.Add(new JsonDateTimeNullToStringConverter());
+                });
             
             services.AddHealthChecks().AddDbContextCheck<ApplicationDbContext>();
 
@@ -63,8 +77,8 @@ namespace CleanArchitecture.WebUI
                 options.SuppressModelStateInvalidFilter = true);
 
             services.AddSwaggerDocumentation();
-            
 
+            services.Configure<MailSettings>(Configuration.GetSection("MailSettings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -104,9 +118,10 @@ namespace CleanArchitecture.WebUI
             // app.UseAuthorization();
             //
             app.UseCors(options =>
-                options.WithOrigins("http://localhost:8080")
+                options.WithOrigins("http://localhost:8080", "https://localhost:44312")
                     .AllowAnyHeader()
                     .AllowAnyMethod());
+            
             
             app.UseMiddleware<JwtMiddleware>();
         

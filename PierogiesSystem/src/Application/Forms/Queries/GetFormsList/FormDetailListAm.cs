@@ -1,5 +1,6 @@
 ﻿namespace CleanArchitecture.Application.Forms.Queries.GetFormsList
 {
+    using System;
     using AutoMapper;
     using Common.Mappings;
     using Domain.Entities;
@@ -8,18 +9,22 @@
 
     public class FormDetailListAm : IMapFrom<Form>
     {
+        public Guid Id { get; set; }
+        public int IdentityNumber { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public AvailableDate FormActive { get; set; } 
         public bool IsActive { get; set; } = false;
-        public string FormType { get; set; }
+        public FormTypeEnum FormType { get; set; }
         public decimal? DeliveryPrice { get; set; }
         public int PlaceOnList { get; set; }
+        public decimal? MinimumTotalPrice { get; set; }
 
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Form, FormDetailListAm>()
-                .ForMember(m => m.FormType, o => o.MapFrom(f => f.FormType.ToString()));
+                .ForMember(m => m.IsActive, o => o.MapFrom(
+                    form => form.FormActive != null ? form.FormActive.From < DateTime.Now && form.FormActive.To > DateTime.Now : false));
         }
     }
 }

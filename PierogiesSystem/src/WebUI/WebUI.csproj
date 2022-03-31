@@ -23,6 +23,7 @@
     <PackageReference Include="AuthorizeNet" Version="2.0.2" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.6" />
     <PackageReference Include="LazyCache" Version="2.4.0" />
+    <PackageReference Include="MailKit" Version="3.1.1" />
     <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="5.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.0" />
@@ -33,6 +34,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="MimeKit" Version="3.1.1" />
     <PackageReference Include="Npgsql" Version="5.0.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="5.0.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.9.4" />
@@ -59,11 +61,6 @@
     <_ContentIncludedByDefault Remove="Pages\Error.cshtml" />
     <_ContentIncludedByDefault Remove="Pages\Shared\_LoginPartial.cshtml" />
     <_ContentIncludedByDefault Remove="Pages\_ViewImports.cshtml" />
-  </ItemGroup>
-  
-
-  <ItemGroup>
-    <Folder Include="Services" />
   </ItemGroup>
 
   <PropertyGroup>

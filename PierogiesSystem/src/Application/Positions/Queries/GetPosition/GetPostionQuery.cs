@@ -7,22 +7,26 @@
     using AutoMapper.QueryableExtensions;
     using Common.Exceptions;
     using Common.Interfaces;
+    using Domain.ValueObjects;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
 
     public class GetPositionQuery : IRequest<PositionAm>
     {
         public Guid Id { get; set; }
-        
+
         public class GetPositionQueryHandler : IRequestHandler<GetPositionQuery, PositionAm>
         {
             private readonly IApplicationDbContext _applicationDbContext;
             private readonly IMapper _mapper;
+            private readonly IPhotoService _photoService;
 
-            public GetPositionQueryHandler(IApplicationDbContext applicationDbContext, IMapper mapper)
+            public GetPositionQueryHandler(IApplicationDbContext applicationDbContext, IMapper mapper,
+                IPhotoService photoService)
             {
                 _applicationDbContext = applicationDbContext;
                 _mapper = mapper;
+                _photoService = photoService;
             }
 
             public async Task<PositionAm> Handle(GetPositionQuery request, CancellationToken cancellationToken)
@@ -35,7 +39,7 @@
                 {
                     throw new NotFoundException(nameof(PositionAm), request.Id);
                 }
-                
+
                 return entity;
             }
         }

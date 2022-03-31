@@ -42,16 +42,16 @@ public class Testing
             w.EnvironmentName == "Development" &&
             w.ApplicationName == "CleanArchitecture.WebUI"));
 
-        services.AddLogging();
+        //services.AddLogging();
 
         startup.ConfigureServices(services);
 
         // Replace service registration for IUserService
         // Remove existing registration
-        var currentUserServiceDescriptor = services.FirstOrDefault(d =>
-            d.ServiceType == typeof(IUserService));
+        // var currentUserServiceDescriptor = services.FirstOrDefault(d =>
+        //     d.ServiceType == typeof(IUserService));
 
-        services.Remove(currentUserServiceDescriptor);
+      //  services.Remove(currentUserServiceDescriptor);
 
    
         _scopeFactory = services.BuildServiceProvider().GetService<IServiceScopeFactory>();
@@ -129,7 +129,6 @@ public class Testing
     public static async Task ResetState()
     {
         await _checkpoint.Reset(_configuration.GetConnectionString("DefaultConnection"));
-        _currentUserId = null;
     }
 
     public static async Task<TEntity> FindAsync<TEntity>(params object[] keyValues)

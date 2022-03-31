@@ -6,6 +6,7 @@
     using Common.Exceptions;
     using Common.Interfaces;
     using Domain.Entities;
+    using Domain.Enums;
     using MediatR;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Logging;
@@ -19,6 +20,7 @@
         public decimal Vat { get; set; }
         public decimal Amount { get; set; }
         public string PortionSize { get; set; }
+        public PositionCategoryEnum PositionCategory { get; set; }
 
         public class Handler : IRequestHandler<UpdatePositionCommand, Guid>
         {
@@ -49,6 +51,7 @@
                 entity.Vat = request.Vat;
                 entity.Amount = request.Amount;
                 entity.PortionSize = request.PortionSize;
+                entity.PositionCategory = request.PositionCategory;
 
                 await _applicationDbContext.SaveChangesAsync(cancellationToken);
                 return entity.Id;

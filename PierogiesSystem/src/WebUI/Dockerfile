@@ -2,14 +2,20 @@
 
 # This stage is used for VS debugging on Docker
 FROM mcr.microsoft.com/dotnet/aspnet:5.0 AS base
+ENV TZ=Europe/Warsaw
+ENV LANG pl_PL.UTF-8
+ENV LANGUAGE ${LANG}
+ENV LC_ALL ${LANG}
 ENV ASPNETCORE_URLS=https://+:5001;http://+:5000
 WORKDIR /app
 EXPOSE 5000
 EXPOSE 5001
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-RUN apt install -y nodejs
+ENV TZ=Europe/Warsaw
+ENV LANG pl_PL.UTF-8
+ENV LANGUAGE ${LANG}
+ENV LC_ALL ${LANG}
 WORKDIR /src
 COPY ["src/WebUI/WebUI.csproj", "src/WebUI/"]
 COPY ["src/Application/Application.csproj", "src/Application/"]
@@ -21,9 +27,17 @@ WORKDIR "/src/src/WebUI"
 RUN dotnet build "WebUI.csproj" -c Release -o /app/build
 
 FROM build AS publish
+ENV TZ=Europe/Warsaw
+ENV LANG pl_PL.UTF-8
+ENV LANGUAGE ${LANG}
+ENV LC_ALL ${LANG}
 RUN dotnet publish "WebUI.csproj" -c Release -o /app/publish
 
 FROM base AS final
+ENV TZ=Europe/Warsaw
+ENV LANG pl_PL.UTF-8
+ENV LANGUAGE ${LANG}
+ENV LC_ALL ${LANG}
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "CleanArchitecture.WebUI.dll"]

@@ -1,5 +1,6 @@
 ﻿namespace CleanArchitecture.WebUI.Controllers
 {
+    using System.Threading.Tasks;
     using Application.Common.Interfaces;
     using Application.Common.Models;
     using Filters;
@@ -15,7 +16,7 @@
         }
 
         [HttpPost("authenticate")]
-        public IActionResult Authenticate(AuthenticateRequest model)
+        public async Task<ActionResult<AuthenticateResponse>> Authenticate(AuthenticateRequest model)
         {
             var response = _userService.Authenticate(model);
 
