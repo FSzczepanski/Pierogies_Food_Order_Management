@@ -1,0 +1,10 @@
+
+1. instalacja docker image
+
+docker pull github.fszczepanski....
+docker image tag...
+docker image save
+
+nazwa image:
+api: pierogies-api
+front: pierogies-client

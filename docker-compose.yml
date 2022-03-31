@@ -1,0 +1,47 @@
+version: '3.9'
+
+volumes:
+  postgres-volume:
+    
+services:
+  api:
+    image: pierogies-api
+    build:
+      context: ./PierogiesSystem
+      dockerfile: src/WebUI/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    volumes:
+      - ~/.aspnet/https:/https:ro
+    ports:
+      - "5001:5001"
+    depends_on:
+      - db
+    restart: on-failure
+    links:
+      - "db:pierogiesDb-production"
+  
+  db:
+    container_name: pierogies-db
+    image: postgres
+    command: postgres -c 'max_connections=100'
+    volumes:
+      - postgres-volume:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      
+      
+  client:
+    image: pierogies-client
+    build:
+      context: ./PierogiesFrontend
+      dockerfile: ./Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+    ports:
+      - "8080:80"
+    depends_on:
+      - pierogies-api
+    restart: on-failure
