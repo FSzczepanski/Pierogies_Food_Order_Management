@@ -9,7 +9,7 @@ ADD package*.json ./
 RUN npm install --verbose
 ADD . .
 COPY  ./.env.production ./.env
-RUN npm run build -- --verbose
+RUN npm run build --verbose
 
 # production stage
 FROM nginx:stable-alpine as production-stage

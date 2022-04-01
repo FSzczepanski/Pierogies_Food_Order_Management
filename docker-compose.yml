@@ -47,7 +47,7 @@ services:
     ports:
       - "8080:80"
     depends_on:
-      - pierogies-api
+      - api
     networks:
       - app-network
     restart: on-failure
