@@ -123,7 +123,9 @@ namespace CleanArchitecture.WebUI
                         "http://localhost:8081",
                         "https://localhost:44312",
                         "https://68.183.214.2:8080",
-                        "https://68.183.214.2:5432")
+                        "https://68.183.214.2:5432",
+                        "http://68.183.214.2:8080",
+                        "http://68.183.214.2:5432")
                     .AllowAnyHeader()
                     .AllowAnyMethod());
             
