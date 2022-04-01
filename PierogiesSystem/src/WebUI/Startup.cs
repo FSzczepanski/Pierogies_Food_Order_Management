@@ -100,11 +100,11 @@ namespace CleanArchitecture.WebUI
             app.UseHealthChecks("/health");
             app.UseHttpsRedirection();
             
-            app.UseStaticFiles();
+            /*app.UseStaticFiles();
             if (!env.IsDevelopment())
             {
                 app.UseSpaStaticFiles();
-            }
+            }*/
             
             app.UseSwaggerUi3(settings =>
             {
