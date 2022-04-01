@@ -6,9 +6,9 @@ ENV TZ=Europe/Warsaw
 ENV LANG pl_PL.UTF-8
 ENV LANGUAGE ${LANG}
 ENV LC_ALL ${LANG}
-ENV ASPNETCORE_URLS=https://+:5001;
+ENV ASPNETCORE_URLS=http://+:5000;
 WORKDIR /app
-EXPOSE 5001
+EXPOSE 5000
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 ENV TZ=Europe/Warsaw
