@@ -20,6 +20,8 @@ services:
     restart: on-failure
     links:
       - "db:pierogiesDb-production"
+    networks:
+      - app-network
   
   db:
     container_name: pierogies-db
@@ -31,6 +33,8 @@ services:
       - "5432:5432"
     environment:
       POSTGRES_PASSWORD: postgres
+    networks:
+      - app-network
       
       
   client:
@@ -44,4 +48,10 @@ services:
       - "8080:80"
     depends_on:
       - pierogies-api
+    networks:
+      - app-network
     restart: on-failure
+
+networks:
+  app-network:
+    driver: bridge
