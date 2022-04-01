@@ -118,7 +118,12 @@ namespace CleanArchitecture.WebUI
             // app.UseAuthorization();
             //
             app.UseCors(options =>
-                options.WithOrigins("http://localhost:8080", "https://localhost:44312")
+                options.WithOrigins(
+                        "http://localhost:8080",
+                        "http://localhost:8081",
+                        "https://localhost:44312",
+                        "https://68.183.214.2:8080",
+                        "https://68.183.214.2:5432")
                     .AllowAnyHeader()
                     .AllowAnyMethod());
             
