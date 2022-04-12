@@ -126,11 +126,10 @@ body{
 }
 
 .positionItem {
-    max-height: 32vh;
+    font-size: 20px;
 }
 
 .positionItem:hover {
-    max-height: 32vh;
     cursor: pointer;
     background-color: #3d3c3c;
 }
@@ -338,6 +337,7 @@ hr {
     height: 100vh;
     overflow-x: auto;
 }
+
 
 .background-image-order{
     background-image: url('~@/assets/backgroundOrders.png');
