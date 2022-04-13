@@ -34,6 +34,7 @@ import { defineComponent, onMounted, ref } from "vue";
 import { ISystemSettings, SystemSettingsClient } from "@/core/api/pierogiesApi";
 import HomeForms from "@/views/Home/HomeForms.vue";
 import AnimatedScroll from "@/components/AnimatedScroll.vue";
+import ApiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "Home",
@@ -54,7 +55,7 @@ export default defineComponent({
       globalDeliveryPrice: 0,
     });
 
-    const client = new SystemSettingsClient(process.env.VUE_APP_API_BASE_PATH);
+    const client = new SystemSettingsClient(process.env.VUE_APP_API_BASE_PATH, ApiService.instance);
     const getSystemSettings = () => {
       client.get().then((response) => {
         systemSettings.value = response;

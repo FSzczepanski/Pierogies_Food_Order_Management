@@ -1,8 +1,5 @@
 ﻿<template>
-  <position-modal
-    @ok="refreshList"
-    ref="PositionModalRef"
-  />
+  <position-modal @ok="refreshList" ref="PositionModalRef" />
   <div class="ms-5 me-5 mt-4">
     <PanelPath :paths="panelPath" />
     <button class="btn btn-primary me-5 float-end" @click="createPosition">
@@ -38,8 +35,10 @@
             {{ item.portionSize }}
           </div>
           <div class="col-md-2">
-            <button class="btn btn-primary ms-4 bi bi-pencil-square"
-            @click="updatePosition(item.id)"></button>
+            <button
+              class="btn btn-primary ms-4 bi bi-pencil-square"
+              @click="updatePosition(item.id)"
+            ></button>
             <button
               class="btn btn-danger rounded-circle ms-2 bi bi-trash"
               @click="openConfirmDeleteModal(item.id)"
@@ -57,6 +56,7 @@ import { confirmDelete } from "@/helpers/confirmationsAdapter";
 import PanelPath from "@/components/PanelPath.vue";
 import { PositionCategoryEnumTranslation } from "@/helpers/enums";
 import PositionModal from "@/views/AdminPanel/components/Positions/PositionModal.vue";
+import ApiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "Forms",
@@ -67,7 +67,10 @@ export default defineComponent({
       { label: "Pozycje", path: "/board/positions" },
     ]);
     const positionsList = reactive({ items: [] as Array<IPositionAm> });
-    const client = new PositionsClient(process.env.VUE_APP_API_BASE_PATH);
+    const client = new PositionsClient(
+      process.env.VUE_APP_API_BASE_PATH,
+      ApiService.instance
+    );
 
     const getPositions = () => {
       client

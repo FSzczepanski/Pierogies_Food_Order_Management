@@ -21,6 +21,7 @@
     "pdfmake": "^0.2.4",
     "vee-validate": "^4.5.10",
     "vue": "^3.0.0",
+    "vue-axios": "^3.4.1",
     "vue-router": "^4.0.0-0",
     "vue3-simple-html2pdf": "^0.0.6",
     "yup": "^0.32.11",

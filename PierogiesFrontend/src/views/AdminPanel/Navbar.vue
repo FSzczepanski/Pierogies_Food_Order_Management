@@ -3,7 +3,9 @@
     <nav class="bg-light navbar">
       <div class="container-fluid">
         <div class="navbar-brand textThird">
-          <h3 class="ms-4 fw-bolder" style="font-family: Cursive,serif">OFDSystem</h3>
+          <h3 class="ms-4 fw-bolder" style="font-family: Cursive, serif">
+            OFDSystem
+          </h3>
         </div>
         <div>
           <router-link class="text-decoration-none" to="/board/settings">
@@ -23,6 +25,7 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { useRouter } from "vue-router";
+import {removeToken} from "@/core/api/authentication";
 
 export default defineComponent({
   name: "Navbar",
@@ -30,8 +33,7 @@ export default defineComponent({
     const router = useRouter();
 
     const logout = () => {
-      localStorage.setItem("auth", "");
-      localStorage.setItem("user", "");
+      removeToken();
 
       router.push({
         name: "Login",

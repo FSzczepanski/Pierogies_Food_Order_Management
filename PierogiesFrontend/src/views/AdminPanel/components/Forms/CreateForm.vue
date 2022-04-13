@@ -266,6 +266,7 @@ import CreateLocationModal from "@/views/AdminPanel/components/Forms/CreateLocat
 import CreateAvailableDateModal from "@/views/AdminPanel/components/Forms/CreateAvailableDateModal.vue";
 import moment from "moment/moment";
 import {showToast} from "@/helpers/confirmationsAdapter";
+import ApiService from "@/core/api/ApiService";
 export default defineComponent({
   name: "CreateForm",
   components: {
@@ -290,7 +291,7 @@ export default defineComponent({
     const positionsList = reactive({ items: [] as Array<IPositionAm> });
 
     const positionsClient = new PositionsClient(
-      process.env.VUE_APP_API_BASE_PATH
+      process.env.VUE_APP_API_BASE_PATH, ApiService.instance
     );
 
     const getPositions = () => {
@@ -378,7 +379,7 @@ export default defineComponent({
     };
 
     const settingClient = new SystemSettingsClient(
-      process.env.VUE_APP_API_BASE_PATH
+      process.env.VUE_APP_API_BASE_PATH, ApiService.instance
     );
     settingClient.get().then((response) => {
       if (response.location) {
@@ -386,7 +387,7 @@ export default defineComponent({
       }
     });
 
-    const formClient = new FormsClient(process.env.VUE_APP_API_BASE_PATH);
+    const formClient = new FormsClient(process.env.VUE_APP_API_BASE_PATH, ApiService.instance);
 
     const createForm = () => {
       createModel.value.formActive = {

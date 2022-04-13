@@ -2,9 +2,6 @@
   <div>
     <h1 class="mt-5">Zaloguj się do panelu</h1>
   </div>
-  <div class="text-danger rounded-3 m-2 mt-5 col-md-3 m-auto">
-    {{ messageInfo }}
-  </div>
   <div>
     <div>
       <div
@@ -13,7 +10,12 @@
         <form>
           <div>
             <el-input class="p-4 pb-3" v-model="login" placeholder="Login" />
-            <el-input class="p-4 pt-2" type="password" v-model="password" placeholder="Hasło" />
+            <el-input
+              class="p-4 pt-2"
+              type="password"
+              v-model="password"
+              placeholder="Hasło"
+            />
             <button class="btn btn-info" @click="handleSubmit">Zaloguj</button>
           </div>
         </form>
@@ -29,23 +31,23 @@ import {
   IAuthenticateRequest,
   UserClient,
 } from "@/core/api/pierogiesApi";
-import {useRoute, useRouter} from "vue-router";
+import { useRoute, useRouter } from "vue-router";
+import { saveToken } from "@/core/api/authentication";
+import apiService from "@/core/api/ApiService";
 
 export default defineComponent({
-  name: "AdminPanel",
+  name: "Login",
   components: {},
   setup: () => {
     const router = useRouter();
-    const route = useRoute();
     const login = ref("");
     const password = ref("");
 
-    const messageInfo = ref("");
-    messageInfo.value = route.params.messageInfo as string;
-
-
     const handleSubmit = () => {
-      const client = new UserClient(process.env.VUE_APP_API_BASE_PATH);
+      const client = new UserClient(
+        process.env.VUE_APP_API_BASE_PATH,
+        apiService.instance
+      );
       const request: IAuthenticateRequest = {
         username: login.value,
         password: password.value,
@@ -54,8 +56,7 @@ export default defineComponent({
         .authenticate(request as AuthenticateRequest)
         .then((response) => {
           if (response.token != undefined && response.username != null) {
-            localStorage.setItem("auth", response.token.toString());
-            localStorage.setItem("user", response.username.toString());
+            saveToken(response.token.toString(), response.username.toString());
             router.push({ name: "Dashboard" });
           }
         })
@@ -68,7 +69,6 @@ export default defineComponent({
       login,
       password,
       handleSubmit,
-      messageInfo,
     };
   },
 });

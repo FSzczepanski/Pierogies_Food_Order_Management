@@ -98,7 +98,6 @@
 import { defineComponent, reactive, ref } from "vue";
 import {
   CreatePositionCommand,
-  FileParameter,
   ICreatePositionCommand,
   PositionCategoryEnum,
   PositionsClient,
@@ -106,13 +105,9 @@ import {
 } from "@/core/api/pierogiesApi";
 import { PositionCategoryEnumTranslation } from "@/helpers/enums";
 import { toArray } from "@/helpers/enums";
-import {
-  ElFile,
-  UploadFile,
-} from "element-plus/es/components/upload/src/upload.type";
-import { ElMessage } from "element-plus";
 import axios from "axios";
 import { showToast } from "@/helpers/confirmationsAdapter";
+import ApiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "PositionModal",
@@ -149,7 +144,7 @@ export default defineComponent({
     };
 
     const positionsClient = new PositionsClient(
-      process.env.VUE_APP_API_BASE_PATH
+      process.env.VUE_APP_API_BASE_PATH, ApiService.instance
     );
 
     const openCreate = () => {

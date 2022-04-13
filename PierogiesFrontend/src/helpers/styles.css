@@ -332,7 +332,7 @@ hr {
 }
 
 .background-image-home{
-    background-image: url('~@/assets/background.png');
+    background-image: url('~@/assets/background.jpg');
     width: 100%;
     height: 100vh;
     overflow-x: auto;
@@ -340,7 +340,7 @@ hr {
 
 
 .background-image-order{
-    background-image: url('~@/assets/backgroundOrders.png');
+    background-image: url('~@/assets/backgroundOrders.jpg');
     width: 100%;
     height: 100vh;
     overflow-x: auto;

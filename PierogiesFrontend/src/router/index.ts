@@ -27,8 +27,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/login",
     name: "Login",
-    component: () => import("../views/AdminPanel/Login.vue"),
-    props: { messageInfo: true },
+    component: () => import("../views/AdminPanel/Login.vue")
   },
   {
     path: "/board",

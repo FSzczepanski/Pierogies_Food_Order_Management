@@ -8,6 +8,7 @@ import plPl from "element-plus/es/locale/lang/pl";
 import * as yup from "yup";
 import yupLocalePL from "yup-locale-pl";
 import Vue3SimpleHtml2pdf from "vue3-simple-html2pdf";
+import ApiService from "@/core/api/ApiService";
 
 const app = createApp(App);
 
@@ -17,6 +18,7 @@ app.use(router).mount("#app");
 app.use(Vue3SimpleHtml2pdf);
 
 yup.setLocale(yupLocalePL);
+ApiService.init();
 
 app.use(ElementPlus, {
   locale: plPl,

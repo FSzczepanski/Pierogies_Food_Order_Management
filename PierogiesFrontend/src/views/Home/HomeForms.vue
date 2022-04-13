@@ -168,6 +168,7 @@ import { useRouter } from "vue-router";
 import { PositionPhoto } from "@/helpers/inferfaces";
 import { PositionCategoryEnumTranslation } from "@/helpers/enums";
 import { showToast } from "@/helpers/confirmationsAdapter";
+import ApiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "HomeForms",
@@ -178,7 +179,7 @@ export default defineComponent({
     const router = useRouter();
     const positionModalVisible = ref(false);
     const orderVisible = ref(false);
-    const client = new FormsClient(process.env.VUE_APP_API_BASE_PATH);
+    const client = new FormsClient(process.env.VUE_APP_API_BASE_PATH, ApiService.instance);
 
     const formsList = ref(Array<any>([]));
     const selectedForm = ref<IFormAm>({

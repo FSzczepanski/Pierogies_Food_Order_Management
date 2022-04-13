@@ -59,6 +59,7 @@ import PanelPath from "@/components/PanelPath.vue";
 import { useRouter } from "vue-router";
 import { FormTypeEnumTranslation } from "@/helpers/enums";
 import { showToast } from "@/helpers/confirmationsAdapter";
+import ApiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "Forms",
@@ -70,7 +71,7 @@ export default defineComponent({
     ]);
 
     const formsList = reactive({ items: [] as Array<IFormDetailListAm> });
-    const client = new FormsClient(process.env.VUE_APP_API_BASE_PATH);
+    const client = new FormsClient(process.env.VUE_APP_API_BASE_PATH, ApiService.instance);
 
     const getForms = () => {
       client

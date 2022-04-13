@@ -135,6 +135,7 @@ import PanelPath from "@/components/PanelPath.vue";
 import { IOrderAm, OrderClient } from "@/core/api/pierogiesApi";
 import { showToast } from "@/helpers/confirmationsAdapter";
 import { PaymentMethodEnumTranslation } from "@/helpers/enums";
+import ApiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "OrderDetails",
@@ -150,7 +151,7 @@ export default defineComponent({
 
     const order = reactive({ item: {} as IOrderAm });
         
-    const client = new OrderClient(process.env.VUE_APP_API_BASE_PATH);
+    const client = new OrderClient(process.env.VUE_APP_API_BASE_PATH, ApiService.instance);
     const getOrder = () => {
       client
         .get(orderId as string)

@@ -331,6 +331,7 @@ import { useField, useForm } from "vee-validate";
 import confirmOrderValidationSchema from "@/views/Home/helpers/confirmOrderValidationSchema";
 import moment from "moment";
 import { PaymentMethodEnumTranslation } from "@/helpers/enums";
+import ApiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "ConfirmOrder",
@@ -440,7 +441,7 @@ export default defineComponent({
     };
 
     const onSubmit = handleSubmit((values: any) => {
-      const client = new OrderClient(process.env.VUE_APP_API_BASE_PATH);
+      const client = new OrderClient(process.env.VUE_APP_API_BASE_PATH, ApiService.instance);
       client
         .create(values as CreateOrderCommand)
         .then(() => {

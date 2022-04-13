@@ -8,25 +8,49 @@
       <p class="mt-3 text-info">{{ userName }}</p>
       <div class="list-group list-group-flush mt-4">
         <router-link class="text-decoration-none" to="/board/dashboard">
-          <a class="bi bi-house-door list-group-item list-group-item-action p-3"> Panel</a>
+          <a
+            class="bi bi-house-door list-group-item list-group-item-action p-3"
+          >
+            Panel</a
+          >
         </router-link>
         <router-link class="text-decoration-none" to="/board/orders">
-          <a class="bi bi-person-lines-fill list-group-item list-group-item-action p-3"> Zamówienia</a>
+          <a
+            class="bi bi-person-lines-fill list-group-item list-group-item-action p-3"
+          >
+            Zamówienia</a
+          >
         </router-link>
         <router-link class="text-decoration-none" to="/board/forms">
-          <a class="bi bi-list-check list-group-item list-group-item-action p-3"> Formularze</a>
+          <a
+            class="bi bi-list-check list-group-item list-group-item-action p-3"
+          >
+            Formularze</a
+          >
         </router-link>
         <router-link class="text-decoration-none" to="/board/positions">
-          <a class="bi bi-journal-richtext list-group-item list-group-item-action p-3"> Pozycje menu</a>
+          <a
+            class="bi bi-journal-richtext list-group-item list-group-item-action p-3"
+          >
+            Pozycje menu</a
+          >
         </router-link>
         <router-link class="text-decoration-none" to="/board/analytics">
-          <a class="bi bi-clipboard-data list-group-item list-group-item-action p-3"> Raporty</a>
+          <a
+            class="bi bi-clipboard-data list-group-item list-group-item-action p-3"
+          >
+            Raporty</a
+          >
         </router-link>
         <router-link class="text-decoration-none" to="/board/invoices">
-          <a class="bi bi-receipt list-group-item list-group-item-action p-3"> Faktury</a>
+          <a class="bi bi-receipt list-group-item list-group-item-action p-3">
+            Faktury</a
+          >
         </router-link>
         <router-link class="text-decoration-none" to="/board/settings">
-          <a class="bi bi-gear list-group-item list-group-item-action p-3"> Ustawienia</a>
+          <a class="bi bi-gear list-group-item list-group-item-action p-3">
+            Ustawienia</a
+          >
         </router-link>
       </div>
     </nav>
@@ -37,7 +61,7 @@
         <Navbar />
       </div>
       <div>
-        <router-view/>
+        <router-view />
       </div>
     </div>
   </div>
@@ -45,24 +69,13 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { useRouter } from "vue-router";
 import Navbar from "@/views/AdminPanel/Navbar.vue";
 
 export default defineComponent({
   name: "AdminPanel",
   components: { Navbar },
   setup: () => {
-    const router = useRouter();
-    const token = localStorage.getItem("auth");
-    const userName = localStorage.getItem("user");
-    if (token == null || token == "") {
-      router.push({
-        name: "Login",
-        params: { messageInfo: "Nastąpiło wylogowanie, zaloguj się ponownie" },
-      });
-    }
-
-    return { userName };
+    return {};
   },
 });
 </script>

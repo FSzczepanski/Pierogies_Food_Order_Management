@@ -79,6 +79,7 @@ import {
 import PanelPath from "@/components/PanelPath.vue";
 import { useRouter } from "vue-router";
 import {showToast} from "@/helpers/confirmationsAdapter";
+import apiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "Orders",
@@ -95,7 +96,7 @@ export default defineComponent({
     const ordersSearched = reactive({
       items: [] as Array<IOrderDetailsListAm>,
     });
-    const client = new OrderClient(process.env.VUE_APP_API_BASE_PATH);
+    const client = new OrderClient(process.env.VUE_APP_API_BASE_PATH, apiService.instance);
     const searchModel = ref<string>("");
 
     watch(
@@ -122,7 +123,7 @@ export default defineComponent({
     };
 
     const formsList = reactive({ items: [] as Array<IFormDetailListAm> });
-    const formsClient = new FormsClient(process.env.VUE_APP_API_BASE_PATH);
+    const formsClient = new FormsClient(process.env.VUE_APP_API_BASE_PATH, apiService.instance);
     formsClient
       .getForms(false)
       .then((response) => {
