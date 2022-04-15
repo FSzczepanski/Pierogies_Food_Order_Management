@@ -1,4 +1,5 @@
 ﻿using CleanArchitecture.Application.Forms.Queries.GetFormForClient;
+using CleanArchitecture.WebUI.Filters;
 
 namespace CleanArchitecture.WebUI.Controllers
 {
@@ -20,6 +21,7 @@ namespace CleanArchitecture.WebUI.Controllers
             return Ok(list);
         }
 
+        [AuthorizeUser]
         [HttpPost]
         public async Task<ActionResult<Guid>> Create([FromBody] CreateFormCommand command)
         {
@@ -27,6 +29,7 @@ namespace CleanArchitecture.WebUI.Controllers
             return Ok(id);
         }
 
+        [AuthorizeUser]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<Guid>> Update([FromBody] UpdateFormCommand command)
         {
@@ -49,6 +52,7 @@ namespace CleanArchitecture.WebUI.Controllers
             return Ok(model);
         }
 
+        [AuthorizeUser]
         [HttpPut]
         [Route("modifyState/{id:guid}")]
         public async Task<ActionResult<Guid>> DisableOrEnableForm(Guid id)

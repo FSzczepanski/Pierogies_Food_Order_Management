@@ -9,7 +9,7 @@
     @ok="addPositionToOrder"
   />
   <div style="min-height: 900px" class="disable-select">
-    <div class="d-flex justify-content-center list-group list-group-horizontal">
+    <div class="d-flex justify-content-center list-group-horizontal">
       <div
         v-for="(item, index) in formsList"
         @click="loadFormData(item.id)"
@@ -29,7 +29,7 @@
         </div>
       </div>
     </div>
-    <div class="m-5">
+    <div class="m-1">
       <div class="mt-5 mb-5">
         {{ selectedForm.description }}
       </div>
@@ -70,18 +70,20 @@
     <transition name="fade">
       <div v-if="price > 0 && !orderVisible" class="row colorThird cart">
         <div
-          class="row justify-content-center mt-2 ms-5 enablePointer"
+          class="row text-center justify-content-center mt-2 enablePointer"
           @click="orderVisible = true"
         >
-          <div class="col-lg-5 ms-5 h3">
-            <div
-              class="ms-5 float-start rounded-circle text-info bg-light text-center p-1"
-              style="width: 5vh; height: 5vh"
-            >
-              {{ orderedPositions.items.length }}
+          <div class="h3 col-lg-6 row">
+            <div class="col">
+              <div
+                class="rounded-circle text-info bg-light p-1 m-auto"
+                style="height: 5vh; width: 5vh"
+              >
+                {{ orderedPositions.items.length }}
+              </div>
             </div>
-            <div class="p-1 float-start ms-5">Zobacz zamówienie</div>
-            <div class="mt-2 h4">{{ price }} zł</div>
+            <div class="p-1 col">Zamówienie</div>
+            <div class="p-1 col fs-4">{{ price }} zł</div>
           </div>
         </div>
       </div>
@@ -127,10 +129,10 @@
               </div>
               <div class="col">
                 <p
-                  class="btn btn-danger"
+                  class="btn btn-danger rounded-circle bg-white"
                   @click="deletePosition(item.positionId)"
                 >
-                  <i class="bi bi-x text-white"></i>
+                  <i class="bi bi-trash text-danger"></i>
                 </p>
               </div>
             </div>
@@ -165,7 +167,8 @@ import PositionDetailsModal from "@/views/Home/PositionDetailsModal.vue";
 import { useRouter } from "vue-router";
 import { PositionPhoto } from "@/helpers/inferfaces";
 import { PositionCategoryEnumTranslation } from "@/helpers/enums";
-import {showToast} from "@/helpers/confirmationsAdapter";
+import { showToast } from "@/helpers/confirmationsAdapter";
+import ApiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "HomeForms",
@@ -176,7 +179,7 @@ export default defineComponent({
     const router = useRouter();
     const positionModalVisible = ref(false);
     const orderVisible = ref(false);
-    const client = new FormsClient(process.env.VUE_APP_API_BASE_PATH);
+    const client = new FormsClient(process.env.VUE_APP_API_BASE_PATH, ApiService.instance);
 
     const formsList = ref(Array<any>([]));
     const selectedForm = ref<IFormAm>({
@@ -235,11 +238,12 @@ export default defineComponent({
       });
     };
 
-    
     const selectedPositionPhotoUrl = ref<string>("");
     const showPositionModal = (position: IFormPosition) => {
       selectedPosition.value = position;
-      const photoUrl = positionPhotos.value.find((photo) => photo.positionId == position.positionId)?.photoUrl;;
+      const photoUrl = positionPhotos.value.find(
+        (photo) => photo.positionId == position.positionId
+      )?.photoUrl;
       selectedPositionPhotoUrl.value = photoUrl ?? "";
       positionModalVisible.value = true;
     };
@@ -263,15 +267,15 @@ export default defineComponent({
 
     const confirmOrder = () => {
       const minPrice = selectedForm.value.minimumTotalPrice!;
-      (price.value < minPrice) ? 
-          showToast("Minimalna wartość zamówienia to " + minPrice + " zł") :
-      router.push({
-        name: "ConfirmOrder",
-        params: {
-          orderPositions: JSON.stringify(orderedPositions.items),
-          form: JSON.stringify(selectedForm.value),
-        },
-      });
+      price.value < minPrice
+        ? showToast("Minimalna wartość zamówienia to " + minPrice + " zł")
+        : router.push({
+            name: "ConfirmOrder",
+            params: {
+              orderPositions: JSON.stringify(orderedPositions.items),
+              form: JSON.stringify(selectedForm.value),
+            },
+          });
     };
 
     const hidePositionModal = () => {
@@ -280,7 +284,7 @@ export default defineComponent({
 
     const loadPositionPhoto = (itemId: string) => {
       return positionPhotos.value.find((photo) => photo.positionId == itemId)
-          ?.photoUrl;
+        ?.photoUrl;
     };
 
     watch(orderedPositions.items, (o) => {

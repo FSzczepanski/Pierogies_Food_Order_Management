@@ -100,11 +100,6 @@ namespace CleanArchitecture.WebUI
             app.UseHealthChecks("/health");
             app.UseHttpsRedirection();
             
-            /*app.UseStaticFiles();
-            if (!env.IsDevelopment())
-            {
-                app.UseSpaStaticFiles();
-            }*/
             
             app.UseSwaggerUi3(settings =>
             {
@@ -113,10 +108,6 @@ namespace CleanArchitecture.WebUI
             });
             
             app.UseRouting();
-            // app.UseAuthentication();
-            //
-            // app.UseAuthorization();
-            //
             app.UseCors(options =>
                 options.WithOrigins(
                         "http://localhost:8080", "https://localhost:8080",

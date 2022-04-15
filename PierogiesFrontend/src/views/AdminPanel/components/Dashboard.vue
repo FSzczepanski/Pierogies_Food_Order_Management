@@ -106,6 +106,7 @@ import { defineComponent, reactive, ref } from "vue";
 import { IOrderDetailsListAm, OrderClient } from "@/core/api/pierogiesApi";
 import PanelPath from "@/components/PanelPath.vue";
 import {useRouter} from "vue-router";
+import ApiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "Dashboard",
@@ -119,7 +120,7 @@ export default defineComponent({
     const router = useRouter();
     
     const ordersList = reactive({ items: [] as Array<IOrderDetailsListAm> });
-    const client = new OrderClient(process.env.VUE_APP_API_BASE_PATH);
+    const client = new OrderClient(process.env.VUE_APP_API_BASE_PATH, ApiService.instance);
 
     client
       .getOrders()

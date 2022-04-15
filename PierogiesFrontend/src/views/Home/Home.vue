@@ -1,15 +1,13 @@
 <template>
   <div
-    class="imga text-center disable-select background-image-home"
+    class="imga text-center disable-select background-image-home homePage"
   >
-    <div class="p-5 h5 me-5" id="nav">
+    <div class="mt-4 me-3 p-1 h5 mb-5" id="nav">
       <router-link class="m-1" to="/">Zamów</router-link>
       |
       <a class="m-2 myNavItem" href="https://staryfolwark.com.pl/nf/"
-        >Folwark</a
+        >Strona główna</a
       >
-      |
-      <router-link class="m-1 myNavItem" to="/about">O nas</router-link>
     </div>
     <animated-scroll>
       <div class="float-end logoContainer col-lg-6 mt-3 me-3 ms-3">
@@ -36,6 +34,7 @@ import { defineComponent, onMounted, ref } from "vue";
 import { ISystemSettings, SystemSettingsClient } from "@/core/api/pierogiesApi";
 import HomeForms from "@/views/Home/HomeForms.vue";
 import AnimatedScroll from "@/components/AnimatedScroll.vue";
+import ApiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "Home",
@@ -56,7 +55,7 @@ export default defineComponent({
       globalDeliveryPrice: 0,
     });
 
-    const client = new SystemSettingsClient(process.env.VUE_APP_API_BASE_PATH);
+    const client = new SystemSettingsClient(process.env.VUE_APP_API_BASE_PATH, ApiService.instance);
     const getSystemSettings = () => {
       client.get().then((response) => {
         systemSettings.value = response;

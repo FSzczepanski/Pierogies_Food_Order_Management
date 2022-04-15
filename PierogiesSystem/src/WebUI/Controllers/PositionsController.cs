@@ -1,4 +1,6 @@
-﻿namespace CleanArchitecture.WebUI.Controllers
+﻿using CleanArchitecture.WebUI.Filters;
+
+namespace CleanArchitecture.WebUI.Controllers
 {
     using System;
     using System.IO;
@@ -21,6 +23,7 @@
             return Ok(list);
         }
 
+        [AuthorizeUser]
         [HttpPost]
         public async Task<ActionResult<Guid>> Create([FromBody] CreatePositionCommand command)
         {
@@ -29,6 +32,7 @@
         }
 
 
+        [AuthorizeUser]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<Guid>> Update([FromBody] UpdatePositionCommand command)
         {
@@ -43,6 +47,7 @@
             return Ok(model);
         }
 
+        [AuthorizeUser]
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult> Delete(Guid id)
         {
@@ -50,6 +55,7 @@
             return Ok(response);
         }
         
+        [AuthorizeUser]
         [HttpPut]
         [Route("photo/{positionId:guid}")]
         public async Task<ActionResult<Guid>> AddPhoto(Guid positionId ,IFormFile file)

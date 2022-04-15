@@ -1,4 +1,6 @@
-﻿namespace CleanArchitecture.WebUI.Controllers
+﻿using CleanArchitecture.WebUI.Filters;
+
+namespace CleanArchitecture.WebUI.Controllers
 {
     using System;
     using System.Threading.Tasks;
@@ -9,6 +11,7 @@
 
     public class SystemSettingsController : ApiControllerBase
     {
+        [AuthorizeUser]
         [HttpPut]
         public async Task<ActionResult<Guid>> Update([FromBody] SaveSystemSettingsCommand command)
         {

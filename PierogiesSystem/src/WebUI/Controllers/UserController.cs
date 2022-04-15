@@ -27,6 +27,7 @@
         }
 
         
+        [AuthorizeUser]
         [HttpGet]
         public IActionResult GetAll()
         {

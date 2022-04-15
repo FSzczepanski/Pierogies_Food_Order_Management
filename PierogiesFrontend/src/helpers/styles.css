@@ -126,11 +126,10 @@ body{
 }
 
 .positionItem {
-    max-height: 32vh;
+    font-size: 20px;
 }
 
 .positionItem:hover {
-    max-height: 32vh;
     cursor: pointer;
     background-color: #3d3c3c;
 }
@@ -333,14 +332,15 @@ hr {
 }
 
 .background-image-home{
-    background-image: url('~@/assets/background.png');
+    background-image: url('~@/assets/background.jpg');
     width: 100%;
     height: 100vh;
     overflow-x: auto;
 }
 
+
 .background-image-order{
-    background-image: url('~@/assets/backgroundOrders.png');
+    background-image: url('~@/assets/backgroundOrders.jpg');
     width: 100%;
     height: 100vh;
     overflow-x: auto;

@@ -228,6 +228,7 @@ import PositionModal from "@/views/AdminPanel/components/Positions/PositionModal
 import CreateAvailableDateModal from "@/views/AdminPanel/components/Forms/CreateAvailableDateModal.vue";
 import moment from "moment/moment";
 import {showToast} from "@/helpers/confirmationsAdapter";
+import apiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "UpdateForm",
@@ -240,7 +241,7 @@ export default defineComponent({
   setup: function (props, { emit }) {
     const router = useRouter();
     const route = useRoute();
-    const formClient = new FormsClient(process.env.VUE_APP_API_BASE_PATH);
+    const formClient = new FormsClient(process.env.VUE_APP_API_BASE_PATH, apiService.instance);
 
     const createPath = ref<Array<any>>([
       { label: "Formularze", path: "/board/forms" },
@@ -250,7 +251,7 @@ export default defineComponent({
     const positionsList = reactive({ items: [] as Array<IPositionAm> });
 
     const positionsClient = new PositionsClient(
-      process.env.VUE_APP_API_BASE_PATH
+      process.env.VUE_APP_API_BASE_PATH, apiService.instance
     );
 
     const getPositions = () => {

@@ -75,9 +75,9 @@
             <div class="mt-4">
               <label class="form-label required"> Numer telefonu </label>
               <el-input
-                  v-model="systemSettings.phoneNumber"
-                  type="number"
-                  placeholder="Wprowadź numer kontaktowy"
+                v-model="systemSettings.phoneNumber"
+                type="number"
+                placeholder="Wprowadź numer kontaktowy"
               />
             </div>
           </div>
@@ -96,8 +96,10 @@ import {
   Location,
   ILocation,
   ISaveSystemSettingsCommand,
-  SystemSettingsClient, SaveSystemSettingsCommand,
+  SystemSettingsClient,
+  SaveSystemSettingsCommand,
 } from "@/core/api/pierogiesApi";
+import ApiService from "@/core/api/ApiService";
 
 export default defineComponent({
   name: "Settings",
@@ -117,7 +119,7 @@ export default defineComponent({
       isDefault: true,
       zipCode: "",
     });
-    
+
     const systemSettings = ref<ISaveSystemSettingsCommand>({
       name: "",
       description: "",
@@ -127,7 +129,10 @@ export default defineComponent({
       maxKmFromLocation: 0,
       globalDeliveryPrice: 0,
     });
-    const client = new SystemSettingsClient(process.env.VUE_APP_API_BASE_PATH);
+    const client = new SystemSettingsClient(
+      process.env.VUE_APP_API_BASE_PATH,
+      ApiService.instance
+    );
 
     client.get().then((response) => {
       systemSettings.value.name = response.name;
@@ -145,15 +150,15 @@ export default defineComponent({
       systemSettings.value.globalDeliveryPrice = response.globalDeliveryPrice;
     });
 
-    
-
     const editSettings = () => {
-      client.update(systemSettings.value as SaveSystemSettingsCommand)
-      .then(() => {
-        console.log("udało się!")
-      }).catch(err => {
-        console.log(err)
-      })
+      client
+        .update(systemSettings.value as SaveSystemSettingsCommand)
+        .then(() => {
+          console.log("udało się!");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     };
 
     return {

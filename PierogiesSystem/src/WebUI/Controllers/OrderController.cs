@@ -1,5 +1,7 @@
 ﻿using CleanArchitecture.Application.Orders.Queries.GetOrder;
+using CleanArchitecture.Application.Orders.Queries.GetOrderForEdit;
 using CleanArchitecture.Application.Orders.Queries.GetSummarizedOrders.vue;
+using CleanArchitecture.WebUI.Filters;
 
 namespace CleanArchitecture.WebUI.Controllers
 {
@@ -12,6 +14,7 @@ namespace CleanArchitecture.WebUI.Controllers
     [Microsoft.AspNetCore.Components.Route("api/v1/core/orders")]
     public class OrderController : ApiControllerBase
     {
+        [AuthorizeUser]
         [HttpGet]
         public async Task<ActionResult<OrderListAm>> GetOrders()
         {
@@ -19,6 +22,7 @@ namespace CleanArchitecture.WebUI.Controllers
             return Ok(list);
         }
         
+        [AuthorizeUser]
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<OrderAm>> Get(Guid id)
         {
@@ -26,6 +30,15 @@ namespace CleanArchitecture.WebUI.Controllers
             return Ok(model);
         }
         
+        [AuthorizeUser]
+        [HttpGet("forEdit/{id:guid}")]
+        public async Task<ActionResult<OrderForEditAm>> GetForEdit(Guid id)
+        {
+            var model = await Mediator.Send(new GetOrderForEditQuery() { Id = id });
+            return Ok(model);
+        }
+        
+        [AuthorizeUser]
         [HttpPost]
         public async Task<ActionResult<Guid>> Create([FromBody] CreateOrderCommand command)
         {
@@ -33,6 +46,7 @@ namespace CleanArchitecture.WebUI.Controllers
             return Ok(id);
         }
         
+        [AuthorizeUser]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<Guid>> Update([FromBody] UpdateOrderCommand command)
         {
@@ -40,6 +54,7 @@ namespace CleanArchitecture.WebUI.Controllers
             return Ok(id);
         }
         
+        [AuthorizeUser]
         [HttpGet]
         [Route("summary/{formId:guid}")]
         public async Task<ActionResult<SummarizedOrdersAm>> GetSummarizedOrders(Guid formId)

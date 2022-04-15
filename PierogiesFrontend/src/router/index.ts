@@ -27,8 +27,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/login",
     name: "Login",
-    component: () => import("../views/AdminPanel/Login.vue"),
-    props: { messageInfo: true },
+    component: () => import("../views/AdminPanel/Login.vue")
   },
   {
     path: "/board",
@@ -86,6 +85,20 @@ const routes: Array<RouteRecordRaw> = [
         name: "Orders",
         component: () =>
           import("../views/AdminPanel/components/Orders/Orders.vue"),
+      },
+      {
+        path: "orders/edit/:orderId",
+        name: "OrderEdit",
+        component: () =>
+            import("../views/AdminPanel/components/Orders/OrderEdit.vue"),
+        props: { orderId: true },
+      },
+      {
+        path: "orders/details/:orderId",
+        name: "OrderDetails",
+        component: () =>
+            import("../views/AdminPanel/components/Orders/OrderDetails.vue"),
+        props: { orderId: true },
       },
       {
         path: "orders/details/:orderId",

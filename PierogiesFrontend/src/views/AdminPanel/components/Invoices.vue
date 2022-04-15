@@ -9,12 +9,14 @@ import PanelPath from "@/components/PanelPath.vue";
 
 export default defineComponent({
   name: "Invoices",
-  components: {PanelPath},
+  components: { PanelPath },
   props: {},
   setup: function (props, { emit }) {
-    const panelPath = ref<Array<any>>([{label: "Faktury",path: "/board/invoices"}])
+    const panelPath = ref<Array<any>>([
+      { label: "Faktury", path: "/board/invoices" },
+    ]);
     return {
-      panelPath
+      panelPath,
     };
   },
 });
