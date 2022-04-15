@@ -1,5 +1,5 @@
 ﻿<template>
-  <div>
+  <div style="min-height: 95vh">
     <img class="w-25 mt-3" src="icon.png" alt="zdjecie" />
     <div class="h1 mt-4">Dziękujemy!</div>
     <div class="h3 m-4">Twoje zamówienie zostało złożone</div>

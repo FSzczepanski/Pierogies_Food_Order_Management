@@ -302,8 +302,12 @@
                 </div>
               </div>
             </div>
-
-            <button class="mt-4 btn btn-primary w-50 mb-3" @click="onSubmit">
+            <re-captcha class="justify-content-center d-flex mb-2" @success="captchaAccepted" />
+            <button
+              v-if="verifiedCaptcha"
+              class="mt-4 btn btn-primary w-50 mb-3"
+              @click="onSubmit"
+            >
               <span @click="shownCard = 0">Złóż zamówienie</span>
             </button>
           </div>
@@ -332,9 +336,11 @@ import confirmOrderValidationSchema from "@/views/Home/helpers/confirmOrderValid
 import moment from "moment";
 import { PaymentMethodEnumTranslation } from "@/helpers/enums";
 import ApiService from "@/core/api/ApiService";
+import ReCaptcha from "@/views/Home/Captcha.vue";
 
 export default defineComponent({
   name: "ConfirmOrder",
+  components: { ReCaptcha },
   setup: () => {
     const route = useRoute();
     const router = useRouter();
@@ -439,9 +445,21 @@ export default defineComponent({
         zipCode.value = selectedLocation.value.zipCode;
       }
     };
+    
+    console.log(process.env.VUE_APP_NODE_ENV)
+    const verifiedCaptcha = ref(process.env.VUE_APP_NODE_ENV != "production");
+    const captchaAccepted = () => {
+      verifiedCaptcha.value = true;
+    };
 
     const onSubmit = handleSubmit((values: any) => {
-      const client = new OrderClient(process.env.VUE_APP_API_BASE_PATH, ApiService.instance);
+      if (!verifiedCaptcha.value) {
+        return;
+      }
+      const client = new OrderClient(
+        process.env.VUE_APP_API_BASE_PATH,
+        ApiService.instance
+      );
       client
         .create(values as CreateOrderCommand)
         .then(() => {
@@ -490,6 +508,8 @@ export default defineComponent({
       needInvoice,
       paymentMethod,
 
+      captchaAccepted,
+      verifiedCaptcha,
       orderedPositions,
       onSubmit,
       fullPrice,

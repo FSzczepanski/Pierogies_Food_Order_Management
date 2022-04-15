@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using CleanArchitecture.Application.Mails.models;
-using Microsoft.AspNetCore.Http;
 
 namespace CleanArchitecture.Application.Orders.Commands
 {

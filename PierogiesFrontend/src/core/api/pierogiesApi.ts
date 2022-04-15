@@ -559,6 +559,57 @@ export class OrderClient {
         return Promise.resolve<string>(null as any);
     }
 
+    getForEdit(id: string , cancelToken?: CancelToken | undefined): Promise<OrderForEditAm> {
+        let url_ = this.baseUrl + "/api/Order/forEdit/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "GET",
+            url: url_,
+            headers: {
+                "Accept": "application/json"
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processGetForEdit(_response);
+        });
+    }
+
+    protected processGetForEdit(response: AxiosResponse): Promise<OrderForEditAm> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (let k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            let result200: any = null;
+            let resultData200  = _responseText;
+            result200 = OrderForEditAm.fromJS(resultData200);
+            return Promise.resolve<OrderForEditAm>(result200);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<OrderForEditAm>(null as any);
+    }
+
     getSummarizedOrders(formId: string , cancelToken?: CancelToken | undefined): Promise<SummarizedOrdersAm> {
         let url_ = this.baseUrl + "/api/Order/summary/{formId}";
         if (formId === undefined || formId === null)
@@ -2382,6 +2433,118 @@ export interface IOrderPosition {
     vat: number;
     amount: number;
     portionSize?: string | undefined;
+}
+
+export class OrderForEditAm implements IOrderForEditAm {
+    id!: string;
+    name?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    positions?: OrderPosition[] | undefined;
+    date!: Date;
+    locationName?: string | undefined;
+    locationDescription?: string | undefined;
+    street?: string | undefined;
+    zipCode?: string | undefined;
+    cityName?: string | undefined;
+    countryName?: string | undefined;
+    isDefault!: boolean;
+    paymentMethod?: PaymentMethodEnum | undefined;
+    isPaid?: boolean | undefined;
+    formId!: string;
+    deliveryPrice!: number;
+    description?: string | undefined;
+
+    constructor(data?: IOrderForEditAm) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.email = _data["email"];
+            this.phone = _data["phone"];
+            if (Array.isArray(_data["positions"])) {
+                this.positions = [] as any;
+                for (let item of _data["positions"])
+                    this.positions!.push(OrderPosition.fromJS(item));
+            }
+            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
+            this.locationName = _data["locationName"];
+            this.locationDescription = _data["locationDescription"];
+            this.street = _data["street"];
+            this.zipCode = _data["zipCode"];
+            this.cityName = _data["cityName"];
+            this.countryName = _data["countryName"];
+            this.isDefault = _data["isDefault"];
+            this.paymentMethod = _data["paymentMethod"];
+            this.isPaid = _data["isPaid"];
+            this.formId = _data["formId"];
+            this.deliveryPrice = _data["deliveryPrice"];
+            this.description = _data["description"];
+        }
+    }
+
+    static fromJS(data: any): OrderForEditAm {
+        data = typeof data === 'object' ? data : {};
+        let result = new OrderForEditAm();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["email"] = this.email;
+        data["phone"] = this.phone;
+        if (Array.isArray(this.positions)) {
+            data["positions"] = [];
+            for (let item of this.positions)
+                data["positions"].push(item.toJSON());
+        }
+        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
+        data["locationName"] = this.locationName;
+        data["locationDescription"] = this.locationDescription;
+        data["street"] = this.street;
+        data["zipCode"] = this.zipCode;
+        data["cityName"] = this.cityName;
+        data["countryName"] = this.countryName;
+        data["isDefault"] = this.isDefault;
+        data["paymentMethod"] = this.paymentMethod;
+        data["isPaid"] = this.isPaid;
+        data["formId"] = this.formId;
+        data["deliveryPrice"] = this.deliveryPrice;
+        data["description"] = this.description;
+        return data;
+    }
+}
+
+export interface IOrderForEditAm {
+    id: string;
+    name?: string | undefined;
+    email?: string | undefined;
+    phone?: string | undefined;
+    positions?: OrderPosition[] | undefined;
+    date: Date;
+    locationName?: string | undefined;
+    locationDescription?: string | undefined;
+    street?: string | undefined;
+    zipCode?: string | undefined;
+    cityName?: string | undefined;
+    countryName?: string | undefined;
+    isDefault: boolean;
+    paymentMethod?: PaymentMethodEnum | undefined;
+    isPaid?: boolean | undefined;
+    formId: string;
+    deliveryPrice: number;
+    description?: string | undefined;
 }
 
 export class CreateOrderCommand implements ICreateOrderCommand {

@@ -68,14 +68,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import Navbar from "@/views/AdminPanel/Navbar.vue";
+import { getUser } from "@/core/api/authentication";
 
 export default defineComponent({
   name: "AdminPanel",
   components: { Navbar },
   setup: () => {
-    return {};
+    const userName = computed(() => {
+      return getUser();
+    });
+    return { userName };
   },
 });
 </script>

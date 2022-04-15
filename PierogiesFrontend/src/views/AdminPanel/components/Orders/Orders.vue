@@ -57,7 +57,7 @@
             <el-checkbox v-model="item.isPaid" :value="item.isPaid" />
           </div>
           <div class="col">
-            <button class="btn btn-primary ms-4 bi bi-pencil-square"></button>
+            <button class="btn btn-primary ms-4 bi bi-pencil-square" @click="editOrder(item.id)"></button>
             <button
               class="btn btn-primary ms-4 bi-card-checklist"
               @click="showOrderDetails(item.id)"
@@ -139,6 +139,13 @@ export default defineComponent({
         params: { orderId: id },
       });
     };
+
+    const editOrder = (id: string) => {
+      router.push({
+        name: "OrderEdit",
+        params: { orderId: id },
+      });
+    };
     
     const generateSummarizedOrders = () => {
       if (searchModel.value != ""){
@@ -162,6 +169,7 @@ export default defineComponent({
       ordersSearched,
       formsList,
       showOrderDetails,
+      editOrder,
       generateSummarizedOrders,
     };
   },

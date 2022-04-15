@@ -87,6 +87,20 @@ const routes: Array<RouteRecordRaw> = [
           import("../views/AdminPanel/components/Orders/Orders.vue"),
       },
       {
+        path: "orders/edit/:orderId",
+        name: "OrderEdit",
+        component: () =>
+            import("../views/AdminPanel/components/Orders/OrderEdit.vue"),
+        props: { orderId: true },
+      },
+      {
+        path: "orders/details/:orderId",
+        name: "OrderDetails",
+        component: () =>
+            import("../views/AdminPanel/components/Orders/OrderDetails.vue"),
+        props: { orderId: true },
+      },
+      {
         path: "orders/details/:orderId",
         name: "OrderDetails",
         component: () =>

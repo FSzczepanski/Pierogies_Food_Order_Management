@@ -1,4 +1,5 @@
 ﻿using CleanArchitecture.Application.Orders.Queries.GetOrder;
+using CleanArchitecture.Application.Orders.Queries.GetOrderForEdit;
 using CleanArchitecture.Application.Orders.Queries.GetSummarizedOrders.vue;
 using CleanArchitecture.WebUI.Filters;
 
@@ -26,6 +27,14 @@ namespace CleanArchitecture.WebUI.Controllers
         public async Task<ActionResult<OrderAm>> Get(Guid id)
         {
             OrderAm model = await Mediator.Send(new GetOrderQuery() { Id = id });
+            return Ok(model);
+        }
+        
+        [AuthorizeUser]
+        [HttpGet("forEdit/{id:guid}")]
+        public async Task<ActionResult<OrderForEditAm>> GetForEdit(Guid id)
+        {
+            var model = await Mediator.Send(new GetOrderForEditQuery() { Id = id });
             return Ok(model);
         }
         
